@@ -191,6 +191,18 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+Route::middleware(['auth'])->group(function () {
+Route::get('/comment', [NewAssessmentController::class, 'index'])->name('comment.index'); 
+Route::post('/comment/store', [NewAssessmentController::class, 'store'])->name('comment.store');
+Route::get('/comment/edit/{transid}', [NewAssessmentController::class, 'edit'])->name('comment.edit');
+Route::post('/comment/update/{transid}', [NewAssessmentController::class, 'update'])->name('comment.update');
+Route::get('/comment/filter/{id?}', [NewAssessmentController::class, 'filter'])->name('comment.filter');
+Route::get('/get-comment/{id}', [NewAssessmentController::class, 'getComment'])-> name('comment.getComment');
+Route::post('/fetch-comment', [NewAssessmentController::class, 'fetchComment'])->name('comment.fetchComment');
+Route::post('/comment/delete', [NewAssessmentController::class, 'destroy'])->name('comment.delete');
+
+});
+
 Route::get('/logout', function () {
     Auth::logout();
     return redirect("/");

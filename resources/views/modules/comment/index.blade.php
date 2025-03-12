@@ -9,7 +9,7 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="filter-tab" data-bs-toggle="tab" data-bs-target="#filterStudents"
                         type="button" role="tab" aria-controls="filterStudents" aria-selected="true">
-                        <i class="fas fa-filter"></i> Students Assessment
+                        <i class="fas fa-filter"></i>Class Teacher's Remarks
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -34,9 +34,9 @@
                         <div class="col-md-2">
                             <label for="term" class="form-label fw-bold">Term</label>
                             <select class="form-select select2" name="term" id="term">
-                                {{--<option value="1">Term 1</option>--}}
+                                {{-- <option value="1">Term 1</option> --}}
                                 <option value="2">Term 2</option>
-                                {{--<option value="3">Term 3</option>
+                                {{-- <option value="3">Term 3</option>
                                 <option value="4">Term 4</option> --}}
                             </select>
                         </div>
@@ -50,17 +50,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-4">
-                            <label for="subcode" class="form-label fw-bold">Subject</label>
-                            <select class="form-select select2" name="subcode" id="subcode">
-                                <option value="">--Select Subject--</option>
-                                @foreach ($subjects as $subject)
-                                    <option value="{{ $subject->subcode }}">{{ $subject->subname }}</option>
-                                @endforeach
-                            </select>
-                        </div>
 
-                        
 
                         <div class="col-md-2 text-center">
                             <button type="submit" class="btn btn-primary">
@@ -156,7 +146,7 @@
                             <br><br>
                             <div id="student_info" style="display: flex; justify-content: space-around;"></div>
                             <br>
-                            
+
                             <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
                             <table
                                 style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #000;"
@@ -178,8 +168,8 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </br>
-                        {{--<h5 style="text-align: center;">GRADING SYSTEM</h5>
+                            </br>
+                            {{-- <h5 style="text-align: center;">GRADING SYSTEM</h5>
                             <table
                                 style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #000;">
                                 <thead style="background-color: #333; color: #fff;">
@@ -231,7 +221,7 @@
                                         <td style="border: 1px solid #000; padding: 8px;">Ungraded</td>
                                     </tr>
                                 </tbody>
-                            </table>--}}
+                            </table> --}}
                             <div style="margin-top: 20px;">
                                 <h5>Class Teacher's Comments:</h5>
                                 <textarea id="teacherComment" style="width: 100%; border: 1px solid #ddd; padding: 10px;" rows="4"
@@ -267,7 +257,7 @@
 
 
 
-        @include('modules.newassessment.modals.edit_student_assess')
+        @include('modules.comment.modals.edit_student_assess')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0/html2canvas.min.js"></script>
@@ -356,7 +346,7 @@
                 });
 
 
-                fetch('{{ route('newassessment.fetchAssessments') }}', {
+                fetch('{{ route('comment.fetchAssessments') }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -455,7 +445,7 @@
                     let term = $('#term').val();
 
                     $.ajax({
-                        url: "{{ route('newassessment.filter') }}",
+                        url: "{{ route('comment.filter') }}",
                         method: "GET",
                         data: {
                             class_code: classCode,
@@ -532,7 +522,7 @@
                             });
 
                             $.ajax({
-                                url: "{{ route('newassessment.store') }}",
+                                url: "{{ route('comment.store') }}",
                                 type: "POST",
                                 data: formData,
                                 dataType: "json",
@@ -542,7 +532,7 @@
                                         Swal.fire({
                                             icon: 'success',
                                             title: 'Success',
-                                            text: 'Assessment updated successfully!',
+                                            text: 'Comment updated successfully!',
                                             confirmButtonText: 'OK'
                                         }).then(() => {
                                             $("#edit-assess-modal").modal("hide");
@@ -587,7 +577,7 @@
                     }
 
                     $.ajax({
-                        url: "{{ route('newassessment.getAssessment', '') }}/" + assessmentId,
+                        url: "{{ route('comment.getAssessment', '') }}/" + assessmentId,
                         type: "GET",
                         data: {
                             class_code: classCode,
@@ -626,7 +616,7 @@
 
                     Swal.fire({
                         title: "Are you sure?",
-                        text: "This action will delete the assessment permanently!",
+                        text: "This action will delete the comment permanently!",
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonText: "Yes, delete it!",
@@ -634,14 +624,14 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $.ajax({
-                                url: "{{ route('newassessment.delete') }}",
+                                url: "{{ route('comment.delete') }}",
                                 method: "POST",
                                 data: {
                                     transid: transid,
                                     _token: "{{ csrf_token() }}"
                                 },
                                 success: function(response) {
-                                    Swal.fire("Deleted!", "Assessment has been deleted.",
+                                    Swal.fire("Deleted!", "Comment has been deleted.",
                                         "success");
                                     $("#filterForm").submit(); //Refresh the table
                                 },
