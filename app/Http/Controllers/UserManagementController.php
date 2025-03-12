@@ -27,7 +27,7 @@ class UserManagementController extends Controller
     {
         try {
             //fetching alll users
-            $user = ManageUserResource::collection(DB::table('tbluser')->where('school_code', $school_code)->where('deleted', '0')->get());
+            $user = ManageUserResource::collection(DB::table('tbluser_ass')->where('school_code', $school_code)->where('deleted', '0')->get());
             return response()->json([
                 'data' => $user
             ]);
@@ -81,7 +81,7 @@ class UserManagementController extends Controller
                 $request->all(),
                 [
 
-                    "userEmail" => "required|email|unique:tbluser,email",
+                    "userEmail" => "required|email|unique:tbluser_ass,email",
                     "userPhone" => "required",
                     "userType" => "required",
                     "user_branch" => "required",
@@ -125,7 +125,7 @@ class UserManagementController extends Controller
             // $randomPassword = Str::random(5);
             //User id
             $schoolPrefix = DB::table('tblschool')->select('school_prefix')->where('school_code', $request->school_code)->get();
-            $tableCount = DB::table('tbluser')->where('school_code', $request->school_code)->where('deleted', '0')->count();
+            $tableCount = DB::table('tbluser_ass')->where('school_code', $request->school_code)->where('deleted', '0')->count();
 
             $userId = $schoolPrefix[0]->school_prefix . str_pad($tableCount, 4, "0", STR_PAD_LEFT);
             //uploading user profile to img folder
@@ -139,7 +139,7 @@ class UserManagementController extends Controller
             }
 
             // Check if user already exists
-                $existingUser = DB::table('tbluser')
+                $existingUser = DB::table('tbluser_ass')
                 ->where('userid', $userId)
                 ->orWhere('email', $request->userEmail)
                 ->first();
@@ -152,7 +152,7 @@ class UserManagementController extends Controller
                 }
 
             //inserting records into database
-            DB::table('tbluser')->insert([
+            DB::table('tbluser_ass')->insert([
                 //"id" => strtoupper(bin2hex(random_bytes(20))),
                 "id" => null,
                 "school_code" => $request->school_code,
@@ -178,14 +178,14 @@ class UserManagementController extends Controller
             $mods = DB::table("tblmodule")->where("system_mod", "=", "1")->get();
 
             foreach ($mods as $mod) {
-                $exists = DB::table("tbluser_module_privileges")
+                $exists = DB::table("tbluser_ass_module_privileges")
                     ->where("userid", $request->userEmail)
                     ->where("school_code", $request->school_code)
                     ->where("mod_id", $mod->mod_id)
                     ->exists();
             
                 if (!$exists) {
-                    DB::table("tbluser_module_privileges")->insert([
+                    DB::table("tbluser_ass_module_privileges")->insert([
                         "userid" => $request->userEmail,
                         "school_code" => $request->school_code,
                         "mod_read" => "1",
@@ -286,7 +286,7 @@ class UserManagementController extends Controller
     //             ]);
     //         }
     //         //selecting user form database
-    //         $user = DB::table('tbluser')->where('school_code', $request->school_code)->where('email', $request->userEmail);
+    //         $user = DB::table('tbluser_ass')->where('school_code', $request->school_code)->where('email', $request->userEmail);
     //         if (count($user->get()) == 0) {
     //             return response()->json([
     //                 "ok" => false,
@@ -349,7 +349,7 @@ class UserManagementController extends Controller
         }
 
         // Selecting user from the database using userId and school_code
-        $user = DB::table('tbluser')
+        $user = DB::table('tbluser_ass')
             ->where('school_code', $request->school_code)
             ->where('userid', $request->userId) // Use userId for a unique match
             ->first();
@@ -363,7 +363,7 @@ class UserManagementController extends Controller
         }
 
         // Update the user's details
-        DB::table('tbluser')
+        DB::table('tbluser_ass')
             ->where('school_code', $request->school_code)
             ->where('userid', $request->userId)
             ->update([
@@ -404,7 +404,7 @@ class UserManagementController extends Controller
     {
         //
         try {
-            $user = DB::table('tbluser')->where('email', $userEmail)->where('deleted', '0');
+            $user = DB::table('tbluser_ass')->where('email', $userEmail)->where('deleted', '0');
             if (count($user->get()) == 0) {
                 return response()->json([
                     "ok" => false,
@@ -451,7 +451,7 @@ class UserManagementController extends Controller
         if ($userdata->school != "" and $userdata->program != "" and $userdata->branch != ""  and $userdata->department != "") {
             //Fetching bills
             $users = ManageUserResource::collection(
-                DB::table("tbluser")
+                DB::table("tbluser_ass")
                     ->where("school_code", $userdata->school)
                     ->where("prog_code", $userdata->program)
                     ->where("branch_code", $userdata->branch)
@@ -468,7 +468,7 @@ class UserManagementController extends Controller
         if ($userdata->school != "" and $userdata->program != "" and $userdata->branch == ""  and $userdata->department == "") {
             //Fetching bills
             $users = ManageUserResource::collection(
-                DB::table("tbluser")
+                DB::table("tbluser_ass")
                     ->where("school_code", $userdata->school)
                     ->where("prog_code", $userdata->program)
                     ->where("deleted", "0")
@@ -482,7 +482,7 @@ class UserManagementController extends Controller
         //Filtering by branch 
         if ($userdata->school != "" and $userdata->program == "" and $userdata->branch != ""  and $userdata->department == "") {
             $users = ManageUserResource::collection(
-                DB::table("tbluser")
+                DB::table("tbluser_ass")
                     ->where("school_code", $userdata->school)
                     ->where("branch_code", $userdata->branch)
                     ->where("deleted", "0")
@@ -496,7 +496,7 @@ class UserManagementController extends Controller
         //Filtering by department
         if ($userdata->school != "" and $userdata->program == "" and $userdata->branch == ""  and $userdata->department != "") {
             $users =  ManageUserResource::collection(
-                DB::table("tbluser")
+                DB::table("tbluser_ass")
                     ->where("school_code", $userdata->school)
                     ->where("dept_code", $userdata->department)
                     ->where("deleted", "0")
@@ -509,7 +509,7 @@ class UserManagementController extends Controller
         //filtering per program and branch
         if ($userdata->school != "" and $userdata->program != "" and $userdata->branch != ""  and $userdata->department == "") {
             $users = ManageUserResource::collection(
-                DB::table("tbluser")
+                DB::table("tbluser_ass")
                     ->where("school_code", $userdata->school)
                     ->where("branch_code", $userdata->branch)
                     ->where("prog_code", $userdata->program)
@@ -523,7 +523,7 @@ class UserManagementController extends Controller
         //filtering per program and department
         if ($userdata->school != "" and $userdata->program != "" and $userdata->branch == ""  and $userdata->department != "") {
             $users = ManageUserResource::collection(
-                DB::table("tbluser")
+                DB::table("tbluser_ass")
                     ->where("school_code", $userdata->school)
                     ->where("dept_code", $userdata->department)
                     ->where("prog_code", $userdata->program)
@@ -537,7 +537,7 @@ class UserManagementController extends Controller
         //Filtering by branch and department
         if ($userdata->school != "" and $userdata->program == "" and $userdata->branch != ""  and $userdata->department != "") {
             $users = ManageUserResource::collection(
-                DB::table("tbluser")
+                DB::table("tbluser_ass")
                     ->where("school_code", $userdata->school)
                     ->where("branch_code", $userdata->branch)
                     ->where("dept_code", $userdata->department)

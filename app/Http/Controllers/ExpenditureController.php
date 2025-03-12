@@ -357,7 +357,7 @@ class ExpenditureController extends Controller
             $request->all(),
             [
                 "category" => ['required', 'string', Rule::unique("tblexp_cat", 'name')],
-                'createuser' => ['required', Rule::exists('tbluser', "userid")->where(function ($query) {
+                'createuser' => ['required', Rule::exists('tbluser_ass', "userid")->where(function ($query) {
                     return $query->where('deleted', 0);
                 })],
                 'school_code'  => ['required'],
@@ -431,7 +431,7 @@ class ExpenditureController extends Controller
             $request->all(),
             [
                 "category" => ['required', 'string', Rule::unique("tblexp_cat", 'name')],
-                'createuser' => ['required', Rule::exists('tbluser', "userid")->where(function ($query) {
+                'createuser' => ['required', Rule::exists('tbluser_ass', "userid")->where(function ($query) {
                     return $query->where('deleted', 0);
                 })],
                 "code" => ['required', Rule::exists('tblexp_cat', "code")->where(function ($query) {

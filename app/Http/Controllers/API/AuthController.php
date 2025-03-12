@@ -24,7 +24,7 @@ class AuthController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                "userid" => "required",
+                "email" => "required",
                 "password" => "required",
             ]
         );
@@ -35,7 +35,7 @@ class AuthController extends Controller
         ];
 
         if ($validator->fails()) {
-            $payload["msg"] = "Login failed. No email or password";
+            $payload["msg"] = "Login failed. No user id or password";
             $payload["error"] = [
                 "msg" => join(" ", $validator->errors()->all()),
                 "fix" => "Kindly fix the above errors",

@@ -28,10 +28,10 @@ class Routecontroller extends Controller
             $staff = DB::table("tblstaff")->where('school_code', Auth::user()->school->school_code)->where("deleted", 0)->count();
             $depart = DB::table("tbldepart")->where('school_code', Auth::user()->school->school_code)->where("deleted", 0)->count();
             $prog = DB::table("tblprog")->where('school_code', Auth::user()->school->school_code)->where("deleted", 0)->count();
-            $user = DB::table('tbluser')->where('school_code', Auth::user()->school->school_code)->where('deleted', '0')->count();
-            // $username= DB::table('tbluser')->select('tbladmin.fname')
-            //     ->join('tbladmin', 'tbluser.email', 'tbladmin.email', Auth::user()->email)
-            //     ->where('tbluser.school_code', Auth::user()->school->school_code)->where('tbluser.deleted', '0')
+            $user = DB::table('tbluser_ass')->where('school_code', Auth::user()->school->school_code)->where('deleted', '0')->count();
+            // $username= DB::table('tbluser_ass')->select('tbladmin.fname')
+            //     ->join('tbladmin', 'tbluser_ass.email', 'tbladmin.email', Auth::user()->email)
+            //     ->where('tbluser_ass.school_code', Auth::user()->school->school_code)->where('tbluser_ass.deleted', '0')
             //     ->where('tbladmin.deleted', '0')
             //     ->where('tbladmin.school_code', Auth::user()->school->school_code)
             //     ->get();
@@ -637,7 +637,7 @@ $averageScores = $performance->pluck('avg_score')->toArray();
     //returning usermanagement module
     public function manageUser()
     {
-        $userType = DB::table('tbluser')->where('school_code', Auth::user()->school->school_code)->where('deleted', '0')->get();
+        $userType = DB::table('tbluser_ass')->where('school_code', Auth::user()->school->school_code)->where('deleted', '0')->get();
 
         //fetcting  branches
         $branches = DB::table('tblbranch')
