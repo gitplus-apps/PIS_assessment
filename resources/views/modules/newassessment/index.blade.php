@@ -1,0 +1,591 @@
+@extends('layouts.app')
+
+@section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<div class="container mt-4">
+    <div class="">
+        <ul class="nav nav-tabs" id="assessmentTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="filter-tab" data-bs-toggle="tab" data-bs-target="#filterStudents" type="button" role="tab" aria-controls="filterStudents" aria-selected="true">
+                    <i class="fas fa-filter"></i> Students Assessment
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button" role="tab" aria-controls="report" aria-selected="false">
+                    <i class="fas fa-chart-bar"></i> Report
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3" id="assessmentTabsContent">
+            <!-- Filter Students Tab -->
+            <div class="tab-pane fade show active" id="filterStudents" role="tabpanel" aria-labelledby="filter-tab">
+                <h4 class="mb-3 text-center text-primary">Students Assessment</h4>
+                
+                <form id="filterForm" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="class_code" class="form-label fw-bold">Class</label>
+                        <select class="form-select select2" name="class_code" id="class_code">
+                            <option value="">--Select Class--</option>
+                            @foreach($classes as $class)
+                                <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="subcode" class="form-label fw-bold">Subject</label>
+                        <select class="form-select select2" name="subcode" id="subcode">
+                            <option value="">--Select Subject--</option>
+                            @foreach($subjects as $subject)
+                                <option value="{{ $subject->subcode }}">{{ $subject->subname }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="term" class="form-label fw-bold">Term</label>
+                        <select class="form-select select2" name="term" id="term">
+                            <option value="">--Select Term--</option>
+                            <option value="1">Term 1</option>
+                            <option value="2">Term 2</option>
+                            <option value="3">Term 3</option>
+                            <option value="4">Term 4</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Apply Filter
+                        </button>
+                    </div>
+                </form>
+
+                <div class="card shadow-lg mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-center text-secondary">Student List</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered mt-3" id="studentTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Student No</th>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Paper 1</th>
+                                        <th>Paper 2</th>
+                                        <th>Total Score</th>
+                                        <th>Grade</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filtered students will be displayed here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <!-- Report Tab -->
+            <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
+            <form id="filterForm" class="mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="class_code">Class</label>
+                <select class="form-control select2" id="report_class_code" name="class_code">
+                    <option value="">Select Class</option>
+                    @foreach($classes as $class)
+                        <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="term">Term</label>
+                <select class="form-control select2" id="report_term" name="term">
+                    <option value="">Select Term</option>
+                    <option value="1">Term 1</option>
+                    <option value="2">Term 2</option>
+                    <option value="3">Term 3</option>
+                    <option value="4">Term 4</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="student_no">Student</label>
+                <select class="form-control select2" id="student_no" name="student_no">
+                    <option value="">Select Student</option>
+                    @foreach($students as $student)
+                        <option value="{{ $student->student_no }}">{{ $student->student_no }}-{{ $student->fname }} {{ $student->lname }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="subject_type">Subject Type</label>
+                <select class="form-control select2" id="subject_type" name="subject_type">
+                    <option value="">Select Subject Type</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="c">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary mt-3" onclick="fetchAssessments()"><i class="fas fa-filter"></i> Filter</button>
+    </form>
+
+            <div class="container mt-4" >
+    
+    <div class="card shadow-lg p-4" id="printSection">
+        
+    <h2 class="text-center text-primary">PIS – MODEL MONTESSORI SCHOOL</h2>
+    <h5 class="text-center">CAMBRIDGE ASSESSMENT INTERNATIONAL EDUCATION</h5>
+    <h6 class="text-center fw-semibold"><input class=" border-0 text-center p-0" type="text" placeholder="Type term..." style="min-width: 170px; width: 170px; font-size: inherit; font-weight:500;"
+    oninput="adjustWidth(this)">{{--FIRST TERM, 2024/2025--}}ACADEMIC YEAR</h6>
+    <h4 class="text-center mt-3">ASSESSMENT REPORT</h4>
+    <script>
+    function adjustWidth(input) {
+        input.style.width = ((input.value.length + 2) * 8.05) + "px"; // Adjust width based on text length
+    }
+</script>
+</br>
+</br>
+        <div class="student-info d-flex justify-content-around" id="student_info">
+            
+        </div>
+</br>
+        
+        <!-- Grading System -->
+        <h5 class="text-center">GRADING SYSTEM</h5>
+        <table class="table table-bordered text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Marks (%)</th>
+                    <th>Grade</th>
+                    <th>Interpretation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>90 – 100</td><td>A*</td><td>Excellent</td></tr>
+                <tr><td>80 – 89</td><td>A</td><td>Excellent</td></tr>
+                <tr><td>70 – 79</td><td>B</td><td>Very Good</td></tr>
+                <tr><td>60 – 69</td><td>C</td><td>Good</td></tr>
+                <tr><td>50 – 59</td><td>D</td><td>Credit</td></tr>
+                <tr><td>40 – 49</td><td>E</td><td>Pass</td></tr>
+                <tr><td>30 – 39</td><td>F</td><td>Fail</td></tr>
+                <tr><td>-</td><td>U</td><td>Ungraded</td></tr>
+            </tbody>
+        </table>
+        
+        <!-- Assessment Table -->
+        <h5 class="text-center">Subjects and Assessment Scores</h5>
+        <table class="table table-bordered text-center" id="assessmentTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Subjects</th>
+                    <th>Paper 1 (50%)</th>
+                    <th>Paper 2 (50%)</th>
+                    <th>Final Score (100%)</th>
+                    <th>Grade</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody id="assessmentData">
+                <tr>
+                    <td colspan="6" class="text-center">No data available</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Class Teacher's Comment -->
+        <div class="mt-4">
+            <h5>Class Teacher's Comments:</h5>
+            <textarea id="teacherComment" class="form-control" rows="4" placeholder="Enter comments..."></textarea>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="mt-4 d-flex justify-content-between">
+            <div class="col-md-6 text-left">
+                <p><strong>Sign:</strong> ____________________</p>
+                <p>Academic Coordinator</p>
+            </div>
+            <div class="col-md-6 text-right">
+                <p><strong>Sign:</strong> ____________________</p>
+                <p>Class Teacher</p>
+            </div>
+        </div>
+        
+        <p><strong>Resumption Date:</strong> 1/11/2024</p>
+        <p><strong>Midterm Date:</strong> 6/11/2024</p>
+    </div>
+</div>
+<div class="mt-3 text-center">
+            <button class="btn btn-success" onclick="printReport()"><i class="fas fa-print"></i> Print</button>
+            <button class="btn btn-danger" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Download PDF</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JavaScript (Make sure you include this in your layout if not already added) -->
+
+
+
+@include('modules.newassessment.modals.edit_student_assess')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script> --}}
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+
+function printReport() {
+    let printContent = document.getElementById('printSection').innerHTML;
+    let printWindow = window.open('', '_blank');
+
+    // Construct the full HTML with Bootstrap styling
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Print Report</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+            <style>
+                body { padding: 20px; }
+            </style>
+        </head>
+        <body>
+            ${printContent}
+        </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+
+    // Ensure styles are fully loaded before printing
+    printWindow.onload = function () {
+        printWindow.print();
+        printWindow.close();
+    };
+}
+
+function downloadPDF() {
+    // Ensure jsPDF and html2canvas are available
+    const { jsPDF } = window.jspdf;
+
+    if (typeof html2canvas === 'undefined') {
+        console.error("html2canvas is not loaded!");
+        return;
+    }
+
+    let cardElement = document.getElementById('printSection'); // Get the report card
+    let teacherComment = document.getElementById('teacherComment')?.value || 'No comments';
+
+    html2canvas(cardElement, { scale: 3, useCORS: true }).then(canvas => {
+        let imgData = canvas.toDataURL('image/png');
+        let pdf = new jsPDF('p', 'mm', 'a4');
+
+        // Scale Image for PDF
+        let imgWidth = 190; // Max width for A4
+        let imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+        if (imgHeight > 250) imgHeight = 250; // Limit height if too big
+
+        pdf.addImage(imgData, 'PNG', 10, 30, imgWidth, imgHeight);
+
+        // Save PDF
+        pdf.save("Assessment_Report.pdf");
+    }).catch(error => console.error("Error generating PDF:", error));
+}
+
+
+</script>    
+<script>
+    function fetchAssessments() {
+    let class_code = document.getElementById('report_class_code')?.value.trim();
+    let term = document.getElementById('report_term')?.value.trim();
+    let student_no = document.getElementById('student_no')?.value.trim();
+    let subject_type = document.getElementById('subject_type')?.value.trim();
+    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    console.log("Captured values:", { class_code, term, student_no, subject_type });
+
+
+    fetch('{{ route("newassessment.fetchAssessments") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({ class_code, term, student_no, subject_type })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log({'current_d': data})
+        let studentInfo = document.getElementById('student_info');
+        studentInfo.innerHTML = `
+            <p><strong>Student Name:</strong> ${data[0].student_name}</p>
+            <p><strong>Class:</strong> ${data[0].class_name}</p>
+        `;
+
+    
+        let tbody = document.getElementById('assessmentData');
+        tbody.innerHTML = '';
+        if (data.length > 0) {
+            data.forEach(assess => {
+                tbody.innerHTML += `<tr>
+                    <td>${assess.subname}</td>
+                    <td>${assess.paper1 ?? 'N/A'}</td>
+                    <td>${assess.paper2 ?? 'N/A'}</td>
+                    <td>${assess.total_score ?? 'N/A'}</td>
+                    <td>${assess.grade}</td>
+                    <td>${assess.t_remarks}</td>
+                </tr>`;
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No data available</td></tr>';
+        }
+    })
+    .catch(error => console.error("Error fetching assessments:", error));
+
+}
+</script>
+<script>
+
+$(document).ready(function () {
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var filterTab = document.getElementById("filter-tab");
+        var reportTab = document.getElementById("report-tab");
+
+        filterTab.addEventListener("click", function () {
+            filterTab.classList.add("active");
+            reportTab.classList.remove("active");
+        });
+
+        reportTab.addEventListener("click", function () {
+            reportTab.classList.add("active");
+            filterTab.classList.remove("active");
+        });
+    });
+
+
+    let studentTable = $('#studentTable tbody');
+    function showNoDataMessage() {
+        studentTable.html(`
+            <tr>
+                <td colspan="8" class="text-center text-muted">No data available in table</td>
+            </tr>
+        `);
+    }
+
+    showNoDataMessage();
+    $('#filterForm').on('submit', function (e) {
+        e.preventDefault();
+        let classCode = $('#class_code').val();
+        let subcode = $('#subcode').val();
+        let term = $('#term').val();
+
+        $.ajax({
+            url: "{{ route('newassessment.filter') }}",
+            method: "GET",
+            data: { class_code: classCode, subcode: subcode, term: term },
+            success: function (response) {
+                studentTable.empty();
+                if (response.students.length > 0) {
+                    response.students.forEach(function (student) {
+                        studentTable.append(`
+                            <tr>
+                                <td>${student.student_no}</td>
+                                <td>${student.fname} ${student.lname}</td>
+                                <td>${student.current_class}</td>
+                                <td>${student.paper1}</td>
+                                <td>${student.paper2}</td>
+                                <td>${student.total_score}</td>
+                                <td>${student.grade}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary edit-assessment-btn" 
+                                            data-id="${student.transid}" 
+                                            data-student="${student.student_no}" 
+                                            data-subcode="${student.subcode}" 
+                                            data-class="${student.class_code}" 
+                                            data-term="${student.term}">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+
+                                    <button class="btn btn-sm btn-danger delete-assessment-btn"
+                                           data-id="${student.transid}">
+                                           <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    showNoDataMessage();
+                }
+            },
+            error: function () {
+                showNoDataMessage();
+            }
+        });
+    });
+   
+
+
+
+    $("#edit-student-assess-form-admin").submit(function (e) {
+        e.preventDefault();
+
+        let formData = $(this).serialize();
+
+        // Confirmation modal using SweetAlert
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to update this assessment?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Proceed with the AJAX request after confirmation
+                Swal.fire({
+                    text: "Updating...",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading(); // Show a loading indicator
+                    }
+                });
+
+                $.ajax({
+                    url: "{{ route('newassessment.store') }}",
+                    type: "POST",
+                    data: formData,
+                    dataType: "json",
+                    success: function (response) {
+                        Swal.close(); // Close loading indicator
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Assessment updated successfully!',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                $("#edit-assess-modal").modal("hide");
+                                //location.reload();
+                                $("#filterForm").submit();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: response.msg,
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.close(); // Close loading indicator
+                        console.log(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong! Please try again.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+
+
+$(document).on("click", ".edit-assessment-btn", function () {
+    let assessmentId = $(this).data("id");
+    let classCode = $('#class_code').val();
+    let subcode = $('#subcode').val();
+    let term = $('#term').val();
+
+    if (!assessmentId) {
+        alert("Assessment ID is missing!");
+        return;
+    }
+
+    $.ajax({
+        url: "{{ route('newassessment.getAssessment', '') }}/" + assessmentId,
+        type: "GET",
+        data: {
+            class_code: classCode,
+            subcode: subcode,
+            term: term
+        },
+        dataType: "json",
+        success: function (data) {
+            if (!data) {
+                alert("Error: Assessment not found.");
+                return;
+            }
+
+            // Fill modal with data for editing
+            $("#edit-ass-school_code").val(data.school_code);
+            $("#edit-ass-code").val(data.transid);
+            $("#edit-ass-student-id").val(data.student_no);
+            $("#edit-ass-student-display").val(data.student_name);
+            $("#edit-ass-class-id").val(data.class_code);
+            $("#edit-ass-course").val(data.subcode);
+            $("#edit-ass-paper1").val(data.paper1);
+            $("#edit-ass-paper2").val(data.paper2);
+            $("#edit-ass-term").val(data.term);
+
+            $("#edit-assess-modal").modal("show");
+        },
+        error: function (xhr) {
+            console.log(xhr.responseText);
+            alert("Error fetching assessment details.");
+        },
+    });
+});
+
+$(document).on("click", ".delete-assessment-btn", function () {
+    let transid = $(this).data("id");
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This action will delete the assessment permanently!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('newassessment.delete') }}",
+                method: "POST",
+                data: { transid: transid, _token: "{{ csrf_token() }}" },
+                success: function (response) {
+                    Swal.fire("Deleted!", "Assessment has been deleted.", "success");
+                     $("#filterForm").submit(); //Refresh the table
+                },
+                error: function () {
+                    Swal.fire("Error!", "Something went wrong. Try again.", "error");
+                }
+            });
+        }
+    });
+});
+
+
+ });
+</script>
+
+@endsection
