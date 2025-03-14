@@ -15,7 +15,7 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button"
                         role="tab" aria-controls="report" aria-selected="false">
-                        <i class="fas fa-chart-bar"></i> Report
+                        <i class="fas fa-chart-bar"></i> Reports
                     </button>
                 </li>
             </ul>
@@ -234,8 +234,7 @@
                             </table>--}}
                             <div style="margin-top: 20px;">
                                 <h5>Class Teacher's Comments:</h5>
-                                <textarea id="teacherComment" style="width: 100%; border: 1px solid #ddd; padding: 10px;" rows="4"
-                                    placeholder="Enter comments..."></textarea>
+                                <div id="comment"></div> 
                             </div>
                             <div style="margin-top: 20px; display: flex; justify-content: space-between;">
                                 <div>
@@ -378,7 +377,9 @@
                         studentInfo.innerHTML = `
             <p><strong>Student Name:</strong> ${data[0].student_name}</p>
             <p><strong>Class:</strong> ${data[0].class_name}</p>
-        `;
+        `;              
+                        let comment = document.getElementById('comment');
+                        comment.innerHTML = `<h6>${data[0].ct_remarks}</h6>`;
 
 
                         let tbody = document.getElementById('assessmentData');
@@ -585,40 +586,42 @@
                         alert("Assessment ID is missing!");
                         return;
                     }
+                    let assessmentUrl = "{{ route('newassessment.getAssessment', ':id') }}".replace(':id', assessmentId);
 
                     $.ajax({
-                        url: "{{ route('newassessment.getAssessment', '') }}/" + assessmentId,
-                        type: "GET",
-                        data: {
-                            class_code: classCode,
-                            subcode: subcode,
-                            term: term
-                        },
-                        dataType: "json",
-                        success: function(data) {
-                            if (!data) {
-                                alert("Error: Assessment not found.");
-                                return;
-                            }
+    url: assessmentUrl,
+    type: "GET",
+    data: {
+        class_code: classCode,
+        subcode: subcode,
+        term: term
+    },
+    dataType: "json",
+    success: function(data) {
+        if (!data) {
+            alert("Error: Assessment not found.");
+            return;
+        }
 
-                            // Fill modal with data for editing
-                            $("#edit-ass-school_code").val(data.school_code);
-                            $("#edit-ass-code").val(data.transid);
-                            $("#edit-ass-student-id").val(data.student_no);
-                            $("#edit-ass-student-display").val(data.student_name);
-                            $("#edit-ass-class-id").val(data.class_code);
-                            $("#edit-ass-course").val(data.subcode);
-                            $("#edit-ass-paper1").val(data.paper1);
-                            $("#edit-ass-paper2").val(data.paper2);
-                            $("#edit-ass-term").val(data.term);
+        // Fill modal with data for editing
+        $("#edit-ass-school_code").val(data.school_code);
+        $("#edit-ass-code").val(data.transid);
+        $("#edit-ass-student-id").val(data.student_no);
+        $("#edit-ass-student-display").val(data.student_name);
+        $("#edit-ass-class-id").val(data.class_code);
+        $("#edit-ass-course").val(data.subcode);
+        $("#edit-ass-paper1").val(data.paper1);
+        $("#edit-ass-paper2").val(data.paper2);
+        $("#edit-ass-term").val(data.term);
 
-                            $("#edit-assess-modal").modal("show");
-                        },
-                        error: function(xhr) {
-                            console.log(xhr.responseText);
-                            alert("Error fetching assessment details.");
-                        },
-                    });
+        $("#edit-assess-modal").modal("show");
+    },
+    error: function(xhr) {
+        console.log("AJAX Error:", xhr.responseText); // Debugging
+        alert("Error fetching assessment details.");
+    },
+});
+
                 });
 
                 $(document).on("click", ".delete-assessment-btn", function() {

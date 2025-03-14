@@ -3,648 +3,345 @@
 @section('content')
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="container mt-4">
+    <div class="">
         <div class="">
-            <ul class="nav nav-tabs" id="assessmentTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="filter-tab" data-bs-toggle="tab" data-bs-target="#filterStudents"
-                        type="button" role="tab" aria-controls="filterStudents" aria-selected="true">
-                        <i class="fas fa-filter"></i>Class Teacher's Remarks
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button"
-                        role="tab" aria-controls="report" aria-selected="false">
-                        <i class="fas fa-chart-bar"></i> Report
-                    </button>
-                </li>
-            </ul>
-
-            <div class="tab-content mt-3" id="assessmentTabsContent">
-                <!-- Filter Students Tab -->
-                <div class="col-md-4">
-                    <label for="searchStudent" class="form-label fw-bold">Search Student</label>
-                    <input type="text" class="form-control" id="searchStudent"
-                        placeholder="Enter student name or number">
-                </div>
-                <div class="tab-pane fade show active" id="filterStudents" role="tabpanel" aria-labelledby="filter-tab">
-                    <h4 class="mb-3 text-center text-primary">Students Assessment</h4>
-
-                    <form id="filterForm" class="row g-3 align-items-end">
-                        <div class="col-md-2">
-                            <label for="term" class="form-label fw-bold">Term</label>
-                            <select class="form-select select2" name="term" id="term">
-                                {{-- <option value="1">Term 1</option> --}}
-                                <option value="2">Term 2</option>
-                                {{-- <option value="3">Term 3</option>
-                                <option value="4">Term 4</option> --}}
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="class_code" class="form-label fw-bold">Class</label>
-                            <select class="form-select select2" name="class_code" id="class_code">
-                                <option value="">--Select Class--</option>
-                                @foreach ($classes as $class)
-                                    <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-
-
-                        <div class="col-md-2 text-center">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter"></i> Apply Filter
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="card shadow-lg mt-4">
-                        <div class="card-body">
-                            <h5 class="card-title text-center text-secondary">Student List</h5>
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered mt-3" id="studentTable">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th>Student No</th>
-                                            <th>Name</th>
-                                            <th>Class</th>
-                                            <th>Paper 1</th>
-                                            <th>Paper 2</th>
-                                            <th>Total Score</th>
-                                            <th>Grade</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Filtered students will be displayed here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+            <form id="filterForm" class="mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="class_code">Class</label>
+                        <select class="form-control select2" id="report_class_code" name="class_code">
+                            <option value="">Select Class</option>
+                            @foreach ($classes as $class)
+                                <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="term">Term</label>
+                        <select class="form-control select2" id="report_term" name="term">
+                            <option value="">Select Term</option>
+                            <option value="1">Term 1</option>
+                            <option value="2">Term 2</option>
+                            <option value="3">Term 3</option>
+                            <option value="4">Term 4</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="student_no">Student</label>
+                        <select class="form-control select2" id="student_no" name="student_no">
+                            <option value="">Select Student</option>
+                            @foreach ($students as $student)
+                                <option value="{{ $student->student_no }}">{{ $student->student_no }}-{{ $student->fname }} {{ $student->mname }} {{ $student->lname }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+                <button type="button" class="btn btn-primary mt-3" onclick="fetchAssessments()">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </form>
 
+            <div class="container mt-4">
+                <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
+                <table class="table table-bordered text-center" id="assessmentTable">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Subjects</th>
+                            <th>Paper 1 (50%)</th>
+                            <th>Paper 2 (50%)</th>
+                            <th>Final Score (100%)</th>
+                            <th>Grade</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assessmentData">
+                        <tr>
+                            <td colspan="7">No data available</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-
-
-                <!-- Report Tab -->
-                <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
-                    <form id="filterForm" class="mb-4">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label for="class_code">Class</label>
-                                <select class="form-control select2" id="report_class_code" name="class_code">
-                                    <option value="">Select Class</option>
-                                    @foreach ($classes as $class)
-                                        <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="term">Term</label>
-                                <select class="form-control select2" id="report_term" name="term">
-                                    <option value="">Select Term</option>
-                                    <option value="1">Term 1</option>
-                                    <option value="2">Term 2</option>
-                                    <option value="3">Term 3</option>
-                                    <option value="4">Term 4</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="student_no">Student</label>
-                                <select class="form-control select2" id="student_no" name="student_no">
-                                    <option value="">Select Student</option>
-                                    @foreach ($students as $student)
-                                        <option value="{{ $student->student_no }}">
-                                            {{ $student->student_no }}-{{ $student->fname }} {{ $student->mname }}
-                                            {{ $student->lname }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+    <!-- Comment Modal -->
+    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Comment</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="commentForm">
+                        <input type="hidden" id="comment_student_no">
+                        <input type="hidden" id="comment_class_code">
+                        <input type="hidden" id="comment_term">
+                        
+                        <div class="form-group">
+                            <label>Student:</label>
+                            <p id="comment_student_name"></p>
                         </div>
-                        <button type="button" class="btn btn-primary mt-3" onclick="fetchAssessments()"><i
-                                class="fas fa-filter"></i> Filter</button>
+                        <div class="form-group">
+                            <label>Class:</label>
+                            <p id="comment_class"></p>
+                        </div>
+                        <div class="form-group">
+                            <label>Term:</label>
+                            <p id="comment_term_text"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="comment_text">Comment</label>
+                            <textarea class="form-control" id="comment_text" rows="3" required></textarea>
+                        </div>
                     </form>
-
-                    <div class="container mt-4">
-
-
-                        <div id="printSection"
-                            style="border: 1px solid #ddd; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1); padding: 20px; width: 80%; margin: auto; font-family: Arial, sans-serif;">
-                            <h2 style="text-align: center; color: #007bff;">PIS – MODEL MONTESSORI SCHOOL</h2>
-                            <h5 style="text-align: center;">CAMBRIDGE ASSESSMENT INTERNATIONAL EDUCATION</h5>
-                            <h6 style="text-align: center; font-weight: 600;">
-                                2024/2025 ACADEMIC YEAR TERM 2
-                            </h6>
-                            <h4 style="text-align: center; margin-top: 20px;">ASSESSMENT REPORT</h4>
-                            <script>
-                                function adjustWidth(input) {
-                                    input.style.width = ((input.value.length + 2) * 8.05) + "px";
-                                }
-                            </script>
-                            <br><br>
-                            <div id="student_info" style="display: flex; justify-content: space-around;"></div>
-                            <br>
-
-                            <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
-                            <table
-                                style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #000;"
-                                id="assessmentTable">
-                                <thead style="background-color: #333; color: #fff;">
-                                    <tr>
-                                        <th style="border: 1px solid #000; padding: 8px;">Subjects</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Paper 1 (50%)</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Paper 2 (50%)</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Final Score (100%)</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Grade</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="assessmentData">
-                                    <tr>
-                                        <td colspan="6" style="border: 1px solid #000; padding: 8px;">No data available
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </br>
-                            {{-- <h5 style="text-align: center;">GRADING SYSTEM</h5>
-                            <table
-                                style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #000;">
-                                <thead style="background-color: #333; color: #fff;">
-                                    <tr>
-                                        <th style="border: 1px solid #000; padding: 8px;">Marks (%)</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Grade</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">90 – 100</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">A*</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Excellent</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">80 – 89</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">A</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Excellent</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">70 – 79</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">B</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Very Good</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">60 – 69</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">C</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Good</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">50 – 59</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">D</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Credit</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">40 – 49</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">E</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Pass</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">30 – 39</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">F</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Fail</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">-</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">U</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Ungraded</td>
-                                    </tr>
-                                </tbody>
-                            </table> --}}
-                            <div style="margin-top: 20px;">
-                                <h5>Class Teacher's Comments:</h5>
-                                <textarea id="teacherComment" style="width: 100%; border: 1px solid #ddd; padding: 10px;" rows="4"
-                                    placeholder="Enter comments..."></textarea>
-                            </div>
-                            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
-                                <div>
-                                    <p><strong>Sign:</strong> ____________________</p>
-                                    <p>Academic Coordinator</p>
-                                </div>
-                                <div>
-                                    <p><strong>Sign:</strong> ____________________</p>
-                                    <p>Class Teacher</p>
-                                </div>
-                            </div>
-                            <p><strong>Resumption Date:</strong> 1/11/2024</p>
-                            <p><strong>Midterm Date:</strong> 6/11/2024</p>
-                        </div>
-
-                        <div class="mt-3 text-center">
-                            <button class="btn btn-success" onclick="printReport()"><i class="fas fa-print"></i>
-                                Print</button>
-                            <button class="btn btn-danger" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i>
-                                Download
-                                PDF</button>
-                        </div>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitComment()">Submit</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Bootstrap JavaScript (Make sure you include this in your layout if not already added) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script>
+        // function fetchAssessments() {
+        //     let class_code = document.getElementById('report_class_code').value.trim();
+        //     let term = document.getElementById('report_term').value.trim();
+        //     let student_no = document.getElementById('student_no').value.trim();
+        //     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+        //     fetch('{{ route('comment.fetchComment') }}', {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        //         body: JSON.stringify({ class_code, term, student_no })
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         let tbody = document.getElementById('assessmentData');
+        //         tbody.innerHTML = '';
+        //         if (data.length > 0) {
+        //             data.forEach(assess => {
+        //                 tbody.innerHTML += `<tr>
+        //                     <td>${assess.subname}</td>
+        //                     <td>${assess.paper1 ?? 'N/A'}</td>
+        //                     <td>${assess.paper2 ?? 'N/A'}</td>
+        //                     <td>${assess.total_score ?? 'N/A'}</td>
+        //                     <td>${assess.grade}</td>
+        //                     <td>${assess.t_remarks}</td>
+        //                     <td><button class="btn btn-sm btn-primary" onclick="openCommentModal('${assess.student_no}', '${assess.class_code}', '${assess.term}', '${assess.student_name}', '${assess.class_desc}')">Comment</button></td>
+        //                 </tr>`;
+        //             });
+        //         } else {
+        //             tbody.innerHTML = '<tr><td colspan="7">No data available</td></tr>';
+        //         }
+        //     })
+        //     .catch(error => console.error("Error fetching assessments:", error));
+        // }
 
-        @include('modules.comment.modals.edit_student_assess')
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script> --}}
+        function fetchAssessments() {
+    let class_code = document.getElementById('report_class_code').value.trim();
+    let term = document.getElementById('report_term').value.trim();
+    let student_no = document.getElementById('student_no').value.trim();
+    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+    fetch('{{ route('comment.fetchComment') }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        body: JSON.stringify({ class_code, term, student_no })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let tbody = document.getElementById('assessmentData');
+        tbody.innerHTML = '';
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-        <script>
-            function printReport() {
-                let printContent = document.getElementById('printSection').innerHTML;
-                let printWindow = window.open('', '_blank');
-
-                // Construct the full HTML with Bootstrap styling
-                printWindow.document.write(`
-        <html>
-        <head>
-            <title>Print Report</title>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-            <style>
-                body { padding: 20px; }
-            </style>
-        </head>
-        <body>
-            ${printContent}
-        </body>
-        </html>
-    `);
-
-                printWindow.document.close();
-
-                // Ensure styles are fully loaded before printing
-                printWindow.onload = function() {
-                    printWindow.print();
-                    printWindow.close();
-                };
-            }
-
-            function downloadPDF() {
-                // Ensure jsPDF and html2canvas are available
-                const {
-                    jsPDF
-                } = window.jspdf;
-
-                if (typeof html2canvas === 'undefined') {
-                    console.error("html2canvas is not loaded!");
-                    return;
-                }
-
-                let cardElement = document.getElementById('printSection'); // Get the report card
-                let teacherComment = document.getElementById('teacherComment')?.value || 'No comments';
-
-                html2canvas(cardElement, {
-                    scale: 3,
-                    useCORS: true
-                }).then(canvas => {
-                    let imgData = canvas.toDataURL('image/png');
-                    let pdf = new jsPDF('p', 'mm', 'a4');
-
-                    // Scale Image for PDF
-                    let imgWidth = 190; // Max width for A4
-                    let imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
-                    if (imgHeight > 250) imgHeight = 250; // Limit height if too big
-
-                    pdf.addImage(imgData, 'PNG', 10, 30, imgWidth, imgHeight);
-
-                    // Save PDF
-                    pdf.save("Assessment_Report.pdf");
-                }).catch(error => console.error("Error generating PDF:", error));
-            }
-        </script>
-        <script>
-            function fetchAssessments() {
-                let class_code = document.getElementById('report_class_code')?.value.trim();
-                let term = document.getElementById('report_term')?.value.trim();
-                let student_no = document.getElementById('student_no')?.value.trim();
-                let subject_type = document.getElementById('subject_type')?.value.trim();
-                let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                console.log("Captured values:", {
-                    class_code,
-                    term,
-                    student_no,
-                    subject_type
-                });
-
-
-                fetch('{{ route('comment.fetchAssessments') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
-                        },
-                        body: JSON.stringify({
-                            class_code,
-                            term,
-                            student_no,
-                            subject_type
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log({
-                            'current_d': data
-                        })
-                        let studentInfo = document.getElementById('student_info');
-                        studentInfo.innerHTML = `
-            <p><strong>Student Name:</strong> ${data[0].student_name}</p>
-            <p><strong>Class:</strong> ${data[0].class_name}</p>
-        `;
-
-
-                        let tbody = document.getElementById('assessmentData');
-                        tbody.innerHTML = '';
-                        if (data.length > 0) {
-                            data.forEach(assess => {
-                                tbody.innerHTML += `<tr>
+        if (data.assessments.length > 0) {
+            data.assessments.forEach(assess => {
+                tbody.innerHTML += `<tr>
                     <td>${assess.subname}</td>
                     <td>${assess.paper1 ?? 'N/A'}</td>
                     <td>${assess.paper2 ?? 'N/A'}</td>
                     <td>${assess.total_score ?? 'N/A'}</td>
                     <td>${assess.grade}</td>
                     <td>${assess.t_remarks}</td>
-                </tr>`;
-                            });
-                        } else {
-                            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No data available</td></tr>';
-                        }
-                    })
-                    .catch(error => console.error("Error fetching assessments:", error));
+                    
+                </tr>
+                <button class="btn btn-sm btn-primary" onclick="openCommentModal('${data.student.student_no}', '${class_code}', '${term}', '${data.student.student_name}', '${assess.class_name}')">
+                            Comment
+                        </button>
 
-            }
-        </script>
-        <script>
-            $(document).ready(function() {
-
-                document.getElementById('searchStudent').addEventListener('keyup', function() {
-                    let searchValue = this.value.toLowerCase();
-                    let tableRows = document.querySelectorAll('#studentTable tbody tr');
-
-                    tableRows.forEach(row => {
-                        let studentNumber = row.cells[0].textContent.toLowerCase();
-                        let studentName = row.cells[1].textContent.toLowerCase();
-
-                        if (studentNumber.includes(searchValue) || studentName.includes(searchValue)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-                });
-
-                document.addEventListener("DOMContentLoaded", function() {
-                    var filterTab = document.getElementById("filter-tab");
-                    var reportTab = document.getElementById("report-tab");
-
-                    filterTab.addEventListener("click", function() {
-                        filterTab.classList.add("active");
-                        reportTab.classList.remove("active");
-                    });
-
-                    reportTab.addEventListener("click", function() {
-                        reportTab.classList.add("active");
-                        filterTab.classList.remove("active");
-                    });
-                });
-
-
-                let studentTable = $('#studentTable tbody');
-
-                function showNoDataMessage() {
-                    studentTable.html(`
-            <tr>
-                <td colspan="8" class="text-center text-muted">No data available in table</td>
-            </tr>
-        `);
-                }
-
-                showNoDataMessage();
-                $('#filterForm').on('submit', function(e) {
-                    e.preventDefault();
-                    let classCode = $('#class_code').val();
-                    let subcode = $('#subcode').val();
-                    let term = $('#term').val();
-
-                    $.ajax({
-                        url: "{{ route('comment.filter') }}",
-                        method: "GET",
-                        data: {
-                            class_code: classCode,
-                            subcode: subcode,
-                            term: term
-                        },
-                        success: function(response) {
-                            studentTable.empty();
-                            if (response.students.length > 0) {
-                                response.students.sort().forEach(function(student) {
-                                    studentTable.append(`
-                            <tr>
-                                <td>${student.student_no}</td>
-                                <td>${student.fname} ${student.mname} ${student.lname}</td>
-                                <td>${student.current_class}</td>
-                                <td>${student.paper1}</td>
-                                <td>${student.paper2}</td>
-                                <td>${student.total_score}</td>
-                                <td>${student.grade}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary edit-assessment-btn"
-                                            data-id="${student.transid}"
-                                            data-student="${student.student_no}"
-                                            data-subcode="${student.subcode}"
-                                            data-class="${student.class_code}"
-                                            data-term="${student.term}">
-                                        <i class="fa fa-edit"></i>
-                                    </button>
-
-                                    <button class="btn btn-sm btn-danger delete-assessment-btn"
-                                           data-id="${student.transid}">
-                                           <i class="fa fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `);
-                                });
-                            } else {
-                                showNoDataMessage();
-                            }
-                        },
-                        error: function() {
-                            showNoDataMessage();
-                        }
-                    });
-                });
-
-
-
-
-                $("#edit-student-assess-form-admin").submit(function(e) {
-                    e.preventDefault();
-
-                    let formData = $(this).serialize();
-
-                    // Confirmation modal using SweetAlert
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "Do you want to update this assessment?",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Submit',
-                        cancelButtonText: 'Cancel'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Proceed with the AJAX request after confirmation
-                            Swal.fire({
-                                text: "Updating...",
-                                allowOutsideClick: false,
-                                allowEscapeKey: false,
-                                didOpen: () => {
-                                    Swal.showLoading(); // Show a loading indicator
-                                }
-                            });
-
-                            $.ajax({
-                                url: "{{ route('comment.store') }}",
-                                type: "POST",
-                                data: formData,
-                                dataType: "json",
-                                success: function(response) {
-                                    Swal.close(); // Close loading indicator
-                                    if (response.ok) {
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Success',
-                                            text: 'Comment updated successfully!',
-                                            confirmButtonText: 'OK'
-                                        }).then(() => {
-                                            $("#edit-assess-modal").modal("hide");
-                                            //location.reload();
-                                            $("#filterForm").submit();
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Oops...',
-                                            text: response.msg,
-                                            confirmButtonText: 'OK'
-                                        });
-                                    }
-                                },
-                                error: function(xhr) {
-                                    Swal.close(); // Close loading indicator
-                                    console.log(xhr.responseText);
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops...',
-                                        text: 'Something went wrong! Please try again.',
-                                        confirmButtonText: 'OK'
-                                    });
-                                }
-                            });
-                        }
-                    });
-                });
-
-
-
-                $(document).on("click", ".edit-assessment-btn", function() {
-                    let assessmentId = $(this).data("id");
-                    let classCode = $('#class_code').val();
-                    let subcode = $('#subcode').val();
-                    let term = $('#term').val();
-
-                    if (!assessmentId) {
-                        alert("Assessment ID is missing!");
-                        return;
-                    }
-
-                    $.ajax({
-                        url: "{{ route('comment.getAssessment', '') }}/" + assessmentId,
-                        type: "GET",
-                        data: {
-                            class_code: classCode,
-                            subcode: subcode,
-                            term: term
-                        },
-                        dataType: "json",
-                        success: function(data) {
-                            if (!data) {
-                                alert("Error: Assessment not found.");
-                                return;
-                            }
-
-                            // Fill modal with data for editing
-                            $("#edit-ass-school_code").val(data.school_code);
-                            $("#edit-ass-code").val(data.transid);
-                            $("#edit-ass-student-id").val(data.student_no);
-                            $("#edit-ass-student-display").val(data.student_name);
-                            $("#edit-ass-class-id").val(data.class_code);
-                            $("#edit-ass-course").val(data.subcode);
-                            $("#edit-ass-paper1").val(data.paper1);
-                            $("#edit-ass-paper2").val(data.paper2);
-                            $("#edit-ass-term").val(data.term);
-
-                            $("#edit-assess-modal").modal("show");
-                        },
-                        error: function(xhr) {
-                            console.log(xhr.responseText);
-                            alert("Error fetching assessment details.");
-                        },
-                    });
-                });
-
-                $(document).on("click", ".delete-assessment-btn", function() {
-                    let transid = $(this).data("id");
-
-                    Swal.fire({
-                        title: "Are you sure?",
-                        text: "This action will delete the comment permanently!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "Cancel"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: "{{ route('comment.delete') }}",
-                                method: "POST",
-                                data: {
-                                    transid: transid,
-                                    _token: "{{ csrf_token() }}"
-                                },
-                                success: function(response) {
-                                    Swal.fire("Deleted!", "Comment has been deleted.",
-                                        "success");
-                                    $("#filterForm").submit(); //Refresh the table
-                                },
-                                error: function() {
-                                    Swal.fire("Error!", "Something went wrong. Try again.",
-                                        "error");
-                                }
-                            });
-                        }
-                    });
-                });
-
-
+                        <button class="btn btn-sm btn-danger" onclick="deleteComment('${assess.transid}')">
+                            Delete
+                        </button>
+                `;
             });
-        </script>
-    @endsection
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7">No data available</td></tr>';
+        }
+    })
+    .catch(error => console.error("Error fetching assessments:", error));
+}
+
+
+        function openCommentModal(student_no, class_code, term, student_name, class_desc) {
+    console.log("Student No:", student_no);
+    console.log("Class Code:", class_code);
+    console.log("Term:", term);
+    console.log("Student Name:", student_name);
+    console.log("Class Desc:", class_desc); // Debugging line
+
+    document.getElementById('comment_student_no').value = student_no;
+    document.getElementById('comment_class_code').value = class_code;
+    document.getElementById('comment_term').value = term;
+    document.getElementById('comment_student_name').textContent = student_name;
+    document.getElementById('comment_class').textContent = class_desc; // Assigning class_desc
+    document.getElementById('comment_term_text').textContent = 'Term ' + term;
+    document.getElementById('comment_text').value = '';
+    $('#commentModal').modal('show');
+
+}
+
+        // function submitComment() {
+        //     let student_no = document.getElementById('comment_student_no').value;
+        //     let class_code = document.getElementById('comment_class_code').value;
+        //     let term = document.getElementById('comment_term').value;
+        //     let comment_text = document.getElementById('comment_text').value;
+        //     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        //     fetch('{{ route('comment.store') }}', {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        //         body: JSON.stringify({ student_no, class_code, term, comment: comment_text })
+        //     })
+        //     .then(() => $('#commentModal').modal('hide'))
+        //     .catch(error => console.error("Error submitting comment:", error));
+        // }
+
+
+
+        function submitComment() {
+    let student_no = document.getElementById('comment_student_no').value;
+    let class_code = document.getElementById('comment_class_code').value;
+    let term = document.getElementById('comment_term').value;
+    let comment_text = document.getElementById('comment_text').value;
+    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    if (!comment_text.trim()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Please enter a comment before submitting.',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to submit this comment?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                text: "Submitting...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Use FormData for proper submission
+            let formData = new FormData();
+            formData.append('_token', csrfToken);
+            formData.append('student_no', student_no);
+            formData.append('class_code', class_code);
+            formData.append('term', term);
+            formData.append('comment', comment_text);
+
+            fetch('{{ route('comment.store') }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Comment submitted successfully!',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        $('#commentModal').modal('hide');
+                        document.getElementById('comment_text').value = ''; // Clear input
+                        location.reload(); // Refresh page or update UI dynamically
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.message || 'An error occurred. Please try again.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.close();
+                console.error("Error submitting comment:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong! Please try again.',
+                    confirmButtonText: 'OK'
+                });
+            });
+        }
+    });
+
+    function deleteComment(transid) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to undo this action!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch('{{ route('comment.destroy') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ transid })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    Swal.fire("Deleted!", data.message, "success");
+                    fetchAssessments(); // Refresh data
+                } else {
+                    Swal.fire("Error!", data.error, "error");
+                }
+            })
+            .catch(error => {
+                Swal.fire("Error!", "An error occurred while deleting.", "error");
+                console.error("Error deleting comment:", error);
+            });
+        }
+    });
+}
+
+}
+
+
+    </script>
+@endsection
