@@ -196,11 +196,11 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/comment', [CommentController::class, 'index'])->name('comment.index'); 
 Route::post('/comment/store', [CommentController::class, 'store'])->name('comment.store');
 Route::get('/comment/edit/{transid}', [CommentController::class, 'edit'])->name('comment.edit');
-Route::post('/comment/update/{transid}', [CommentController::class, 'update'])->name('comment.update');
+Route::post('/comment/update', [CommentController::class, 'update'])->name('comment.update');
 Route::get('/comment/filter/{id?}', [CommentController::class, 'filter'])->name('comment.filter');
 Route::get('/get-comment/{id}', [CommentController::class, 'getComment'])-> name('comment.getComment');
 Route::post('/fetch-comment', [CommentController::class, 'fetchComment'])->name('comment.fetchComment');
-Route::post('/comment/delete', [CommentController::class, 'destroy'])->name('comment.destroy');
+Route::post('/comment/delete', [CommentController::class, 'delete'])->name('comment.delete');
 
 });
 

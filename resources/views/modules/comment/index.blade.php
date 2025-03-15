@@ -5,8 +5,7 @@
 
     <div class="">
         <div class="">
-            <form id="filterForm" class="mb-4">
-                <div class="row">
+            <form id="filterForm" class="row g-3 align-items-end">
                     <div class="col-md-3">
                         <label for="class_code">Class</label>
                         <select class="form-control select2" id="report_class_code" name="class_code">
@@ -35,15 +34,16 @@
                             @endforeach
                         </select>
                     </div>
-                </div>
-                <button type="button" class="btn btn-primary mt-3" onclick="fetchAssessments()">
+                    <div class="col-md-2 text-center">
+                <button type="button" class="btn btn-primary" onclick="fetchAssessments()">
                     <i class="fas fa-filter"></i> Filter
                 </button>
+                    </div>
             </form>
 
             <div class="container mt-4">
                 <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
-                <table class="table table-bordered text-center" id="assessmentTable">
+                <table class="table table-bordered table-striped text-center"class="table table-bordered text-center" id="assessmentTable">
                     <thead class="thead-dark">
                         <tr>
                             <th>Subjects</th>
@@ -104,43 +104,38 @@
         </div>
     </div>
 
+
+    <!-- Edit Comment Modal -->
+<div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Comment</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editCommentForm">
+                    <input type="hidden" id="edit_comment_id">
+
+                    <div class="form-group">
+                        <label for="edit_comment_text">Edit Comment</label>
+                        <textarea class="form-control" id="edit_comment_text" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="updateComment()">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // function fetchAssessments() {
-        //     let class_code = document.getElementById('report_class_code').value.trim();
-        //     let term = document.getElementById('report_term').value.trim();
-        //     let student_no = document.getElementById('student_no').value.trim();
-        //     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        //     fetch('{{ route('comment.fetchComment') }}', {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-        //         body: JSON.stringify({ class_code, term, student_no })
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         let tbody = document.getElementById('assessmentData');
-        //         tbody.innerHTML = '';
-        //         if (data.length > 0) {
-        //             data.forEach(assess => {
-        //                 tbody.innerHTML += `<tr>
-        //                     <td>${assess.subname}</td>
-        //                     <td>${assess.paper1 ?? 'N/A'}</td>
-        //                     <td>${assess.paper2 ?? 'N/A'}</td>
-        //                     <td>${assess.total_score ?? 'N/A'}</td>
-        //                     <td>${assess.grade}</td>
-        //                     <td>${assess.t_remarks}</td>
-        //                     <td><button class="btn btn-sm btn-primary" onclick="openCommentModal('${assess.student_no}', '${assess.class_code}', '${assess.term}', '${assess.student_name}', '${assess.class_desc}')">Comment</button></td>
-        //                 </tr>`;
-        //             });
-        //         } else {
-        //             tbody.innerHTML = '<tr><td colspan="7">No data available</td></tr>';
-        //         }
-        //     })
-        //     .catch(error => console.error("Error fetching assessments:", error));
-        // }
 
         function fetchAssessments() {
     let class_code = document.getElementById('report_class_code').value.trim();
@@ -169,13 +164,25 @@
                     <td>${assess.t_remarks}</td>
                     
                 </tr>
-                <button class="btn btn-sm btn-primary" onclick="openCommentModal('${data.student.student_no}', '${class_code}', '${term}', '${data.student.student_name}', '${assess.class_name}')">
-                            Comment
-                        </button>
+                <h6>Comment</h6>
+             <div class="d-flex flex-column gap-2">
+    <span class="fw-semibold text-secondary text-wrap">${assess.comment}</span>
+    <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-primary" 
+            onclick="openCommentModal('${data.student.student_no}', '${class_code}', '${term}', '${data.student.student_name}', '${assess.class_name}')">
+            <i class="fas fa-comment"></i> Comment
+        </button>
+        <button class="btn btn-sm btn-outline-success" 
+            onclick="openEditCommentModal('${assess.transid}', '${assess.comment}')">
+            <i class="fas fa-edit"></i> Edit
+        </button>
+        <button class="btn btn-sm btn-outline-danger delete-comment-btn" data-id="${assess.transid}">
+            <i class="fas fa-trash-alt"></i> Delete
+        </button>
+    </div>
+</div>
 
-                        <button class="btn btn-sm btn-danger" onclick="deleteComment('${assess.transid}')">
-                            Delete
-                        </button>
+
                 `;
             });
         } else {
@@ -186,7 +193,7 @@
 }
 
 
-        function openCommentModal(student_no, class_code, term, student_name, class_desc) {
+ function openCommentModal(student_no, class_code, term, student_name, class_desc) {
     console.log("Student No:", student_no);
     console.log("Class Code:", class_code);
     console.log("Term:", term);
@@ -201,28 +208,10 @@
     document.getElementById('comment_term_text').textContent = 'Term ' + term;
     document.getElementById('comment_text').value = '';
     $('#commentModal').modal('show');
-
 }
 
-        // function submitComment() {
-        //     let student_no = document.getElementById('comment_student_no').value;
-        //     let class_code = document.getElementById('comment_class_code').value;
-        //     let term = document.getElementById('comment_term').value;
-        //     let comment_text = document.getElementById('comment_text').value;
-        //     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        //     fetch('{{ route('comment.store') }}', {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-        //         body: JSON.stringify({ student_no, class_code, term, comment: comment_text })
-        //     })
-        //     .then(() => $('#commentModal').modal('hide'))
-        //     .catch(error => console.error("Error submitting comment:", error));
-        // }
-
-
-
-        function submitComment() {
+function submitComment() {
     let student_no = document.getElementById('comment_student_no').value;
     let class_code = document.getElementById('comment_class_code').value;
     let term = document.getElementById('comment_term').value;
@@ -281,7 +270,8 @@
                     }).then(() => {
                         $('#commentModal').modal('hide');
                         document.getElementById('comment_text').value = ''; // Clear input
-                        location.reload(); // Refresh page or update UI dynamically
+                        // location.reload(); 
+                        $("#filterForm").submit();
                     });
                 } else {
                     Swal.fire({
@@ -305,43 +295,95 @@
         }
     });
 
-    function deleteComment(transid) {
+}
+
+function openEditCommentModal(transid, comment) {
+    document.getElementById('edit_comment_id').value = transid;
+    document.getElementById('edit_comment_text').value = comment;
+    $('#editCommentModal').modal('show');
+}
+
+
+function updateComment() {
+    let transid = document.getElementById('edit_comment_id').value;
+    let ct_remarks = document.getElementById('edit_comment_text').value;
+    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    if (!transid || !ct_remarks) {
+        Swal.fire("Warning!", "Please enter a comment before updating.", "warning");
+        return;
+    }
+
     Swal.fire({
         title: "Are you sure?",
-        text: "You won't be able to undo this action!",
+        text: "Do you want to update this comment?",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Update!"
     }).then((result) => {
         if (result.isConfirmed) {
-            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            fetch('{{ route('comment.destroy') }}', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                body: JSON.stringify({ transid })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.ok) {
-                    Swal.fire("Deleted!", data.message, "success");
-                    fetchAssessments(); // Refresh data
-                } else {
-                    Swal.fire("Error!", data.error, "error");
+            $.ajax({
+                url: "{{ route('comment.update') }}",
+                method: "POST",
+                data: {
+                    transid: transid,
+                    ct_remarks: ct_remarks,
+                    _token: csrfToken
+                },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Success!", "Comment updated successfully.", "success")
+                            .then(() => location.reload());
+                    } else {
+                        Swal.fire("Error!", response.message, "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "Something went wrong. Try again.", "error");
                 }
-            })
-            .catch(error => {
-                Swal.fire("Error!", "An error occurred while deleting.", "error");
-                console.error("Error deleting comment:", error);
             });
         }
     });
 }
 
-}
-
-
     </script>
+
+<script>
+    $(document).ready(function(){
+
+        $(document).on("click", ".delete-comment-btn", function() {
+                    let transid = $(this).data("id");
+
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "This action will delete the assessment permanently!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Delete!",
+                        cancelButtonText: "Cancel"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: "{{ route('comment.delete') }}",
+                                method: "POST",
+                                data: {
+                                    transid: transid,
+                                    _token: "{{ csrf_token() }}"
+                                },
+                                success: function(response) {
+                                    Swal.fire("Deleted!", "Assessment has been deleted.",
+                                        "success");
+                                },
+                                error: function() {
+                                    Swal.fire("Error!", "Something went wrong. Try again.",
+                                        "error");
+                                }
+                            });
+                        }
+                    });
+                });
+});
+</script>
 @endsection

@@ -25,6 +25,7 @@ class CommentController extends Controller{
         $classes = DB::table('tblclass')->where('deleted', '0')->get();
         $acyear = date("Y");
         $acyearr = DB::table('tblacyear')->where('current_term', '1')->select('acyear_desc', 'acterm');
+        $comments = DB::table('tblcomment_ia')->where('deleted', '0')->get();
 
         $staffNo = auth()->user()->userid;
         // $subjects = DB::table('tblsubject_assignment')
@@ -68,89 +69,12 @@ class CommentController extends Controller{
 
     $assessments = $query->get();
 
-        return view('modules.comment.index', compact('classes', 'subjects', 'academicYears', 'assessments', 'students', 'acyearr'));
+        return view('modules.comment.index', compact('classes', 'subjects', 'academicYears', 'assessments', 'students', 'acyearr', 'comments'));
     }
 
 
-    public function filter(Request $request)
-{
-    $request->validate([
-        'class_code' => 'required',
-        'subcode' => 'required',
-        'term' => 'required',
-    ]);
 
-    $classCode = $request->class_code;
-    $subcode = $request->subcode;
-    $term = $request->term;
-
-    // Fetch students from tblstudent with a LEFT JOIN on tblassmain_ai
-    $students = DB::table('tblstudent')
-        ->leftJoin('tblassmain_ai', function ($join) {
-            $join->on('tblassmain_ai.student_no', '=', 'tblstudent.student_no');
-        })
-        ->where('tblstudent.current_class', $classCode)
-        ->where('tblstudent.deleted', '0') // Exclude deleted students
-        ->where(function ($query) use ($classCode, $subcode, $term) {
-            $query->where('tblassmain_ai.class_code', $classCode)
-                  ->where('tblassmain_ai.subcode', $subcode)
-                  ->where('tblassmain_ai.term', $term)
-                  ->where('tblassmain_ai.deleted', '0')
-                  ->orWhereNull('tblassmain_ai.student_no'); // Ensure all students are included
-        })
-        ->select(
-            'tblstudent.student_no',
-            'tblstudent.fname',
-            'tblstudent.mname',
-            'tblstudent.lname',
-            'tblstudent.current_class',
-            DB::raw('COALESCE(tblassmain_ai.transid, tblstudent.transid) as transid'),
-            DB::raw('IFNULL(tblassmain_ai.class_code, "' . $classCode . '") as class_code'),
-            DB::raw('IFNULL(tblassmain_ai.subcode, "' . $subcode . '") as subcode'),
-            DB::raw('IFNULL(tblassmain_ai.term, "' . $term . '") as term'),
-            DB::raw('IFNULL(tblassmain_ai.deleted, "0") as deleted'),
-            DB::raw('COALESCE(tblassmain_ai.paper1, "0") as paper1'),
-            DB::raw('COALESCE(tblassmain_ai.paper2, "0") as paper2'),
-            DB::raw('COALESCE(tblassmain_ai.total_score, "0") as total_score'),
-            DB::raw('COALESCE(tblassmain_ai.grade, "Ungraded") as grade')
-        )
-        ->orderBy("tblstudent.fname", "asc")
-        ->get();
-
-    return response()->json([
-        'ok' => true,
-        'students' => $students,
-    ]);
-}
-
-
-
-// public function store(Request $request)
-// {
-//     $transid = Str::uuid()->toString(); // Generate a unique transaction ID
-//     $school_code = auth()->user()->school_code; // Replace with the actual school code
-//     $acyear = date('Y'); // Current academic year
-//     $createuser = auth()->user()->userid; // Logged-in user
-
-//     DB::table('tblcomment_ia')->insert([
-//         'transid' => $transid,
-//         'school_code' => $school_code,
-//         'acyear' => $acyear,
-//         'term' => $request->term,
-//         'student_no' => $request->student_no,
-//         'class_code' => $request->class_code,
-//         'ct_remarks' => $request->comment,
-//         'source' => 'M', // M = Manual entry
-//         'import' => '0',
-//         'export' => '0',
-//         'deleted' => '0',
-//         'createuser' => $createuser,
-//         'createdate' => now(),
-//     ]);
-
-//     return response()->json(['success' => true, 'message' => 'Comment saved successfully.']);
-// }
-
+//store comment
 public function store(Request $request)
 {
     $transid = Str::uuid()->toString(); // Generate a unique transaction ID
@@ -174,7 +98,7 @@ public function store(Request $request)
 
     // Insert new comment
     DB::table('tblcomment_ia')->insert([
-        'transid' => $transid,
+        'transid' => strtoupper(strtoupper(bin2hex(random_bytes(5)))),
         'school_code' => $school_code,
         'acyear' => $acyear,
         'term' => $request->term,
@@ -193,21 +117,60 @@ public function store(Request $request)
 }
 
 
+// public function update(Request $request)
+// {
+//     try {
+//         $request->validate([
+//             'transid' => 'required|integer',
+//             'comment' => 'required|string|max:255',
+//         ]);
 
-public function deestroy(Request $request)
+//         $comment = DB::table('tblcomment_ia')->find($request->transid);
+//         if (!$comment) {
+//             return response()->json(['success' => false, 'message' => 'Comment not found.']);
+//         }
+
+//         $comment->comment = $request->comment;
+//         $comment->save();
+
+//         return response()->json(['success' => true, 'message' => 'Comment updated successfully!']);
+//     } catch (\Exception $e) {
+//         return response()->json(['success' => false, 'message' => 'Error updating comment.']);
+//     }
+// }
+
+public function update(Request $request)
 {
-    $assessment = DB::table("tblassmain_ai")->where('transid', $request->transid)->first();
+    $request->validate([
+        'transid' => 'required|string',
+        'ct_remarks' => 'required|string|max:2000',
+    ]);
 
-    if (!$assessment) {
-        return response()->json(['error' => 'Assessment not found'], 404);
+    $comment = DB::table('tblcomment_ia')->where('transid', $request->transid)->first();
+
+    if (!$comment) {
+        return response()->json(['success' => false, 'message' => 'Comment not found.']);
     }
 
-    $assessment->delete();
-    return response()->json(['success' => 'Assessment deleted successfully']);
+    $update = DB::table('tblcomment_ia')
+        ->where('transid', $request->transid)
+        ->update([
+            'ct_remarks' => $request->ct_remarks,
+            'modifyuser' => auth()->user()->id ?? 'System', // Track user making changes
+            'modifydate' => now(),
+        ]);
+
+    if ($update) {
+        return response()->json(['success' => true, 'message' => 'Comment updated successfully.']);
+    } else {
+        return response()->json(['success' => false, 'message' => 'Error updating comment.']);
+    }
 }
 
 
-public function destroy(Request $request) {
+
+
+public function delete(Request $request) {
     try {
         $deleted = DB::table("tblcomment_ia")
             ->where("transid", $request->transid)
@@ -224,72 +187,6 @@ public function destroy(Request $request) {
 }
 
 
-public function getComment(Request $request, $id)
-{
-    // Get filter values from the request
-    $classCode = $request->input('class_code', '');
-    $subcode = $request->input('subcode', '');
-    $term = $request->input('term', '');
-
-    $assessment = DB::table("tblstudent")
-        ->leftJoin("tblassmain_ai", function ($join) use ($subcode) {
-            $join->on("tblstudent.student_no", "=", "tblassmain_ai.student_no")
-                 ->on("tblstudent.admterm", "=", "tblassmain_ai.term")
-                 ->on("tblstudent.current_class", "=", "tblassmain_ai.class_code")
-                 ->on(DB::raw("COALESCE(tblassmain_ai.subcode, '')"), "=", DB::raw("'$subcode'"));
-        })
-        ->leftJoin("tblclass", "tblstudent.current_class", "=", "tblclass.class_code")
-        ->select(
-            "tblstudent.student_no",
-            "tblstudent.transid AS student_transid",
-            "tblstudent.school_code",
-            DB::raw("CONCAT(tblstudent.fname, ' ', COALESCE(tblstudent.mname, ''), ' ', tblstudent.lname) AS student_name"),
-            DB::raw("COALESCE(tblclass.class_desc, '') AS course_name"),
-            DB::raw("COALESCE(tblassmain_ai.transid, '') AS assessment_transid"),
-            DB::raw('IFNULL(tblassmain_ai.class_code, "' . $classCode . '") AS class_code'),
-            DB::raw('"' . $subcode . '" AS subcode'),
-            DB::raw('IFNULL(tblassmain_ai.term, "' . $term . '") AS term'),
-            DB::raw("COALESCE(tblassmain_ai.deleted, '0') AS deleted"),
-            DB::raw('COALESCE(tblassmain_ai.transid, tblstudent.transid) as transid'),
-
-            // Ensure paper1 and paper2 are 0 if there is no exact match in tblassmain_ai
-            DB::raw("
-                CASE
-                    WHEN tblassmain_ai.student_no IS NULL THEN '0'
-                    WHEN tblassmain_ai.subcode IS NULL OR tblassmain_ai.subcode = '' THEN '0'
-                    ELSE COALESCE(tblassmain_ai.paper1, '0')
-                END AS paper1
-            "),
-            DB::raw("
-                CASE
-                    WHEN tblassmain_ai.student_no IS NULL THEN '0'
-                    WHEN tblassmain_ai.subcode IS NULL OR tblassmain_ai.subcode = '' THEN '0'
-                    ELSE COALESCE(tblassmain_ai.paper2, '0')
-                END AS paper2
-            "),
-            DB::raw("
-                CASE
-                    WHEN tblassmain_ai.student_no IS NULL THEN '0'
-                    WHEN tblassmain_ai.subcode IS NULL OR tblassmain_ai.subcode = '' THEN '0'
-                    ELSE COALESCE(tblassmain_ai.total_score, '0')
-                END AS total_score
-            ")
-        )
-        ->where(function ($query) use ($id) {
-            $query->where("tblstudent.transid", $id)
-                  ->orWhere("tblassmain_ai.transid", $id);
-            })
-        ->first();
-
-    if (!$assessment) {
-        return response()->json(['error' => 'Assessment not found', 'query_id' => $id], 404);
-    }
-
-    return response()->json($assessment);
-}
-
-
-
 // public function fetchComment(Request $request)
 // {
 //     $class_code = $request->input('class_code');
@@ -300,13 +197,17 @@ public function getComment(Request $request, $id)
 //         ->join('tblsubject', 'tblassmain_ai.subcode', '=', 'tblsubject.subcode') // Only subjects with assessments
 //         ->join('tblstudent', 'tblassmain_ai.student_no', '=', 'tblstudent.student_no')
 //         ->leftJoin('tblclass', 'tblclass.class_code', '=', DB::raw("'$class_code'"))
+//         ->leftJoin('tblcomment_ia', 'tblassmain_ai.student_no', '=', 'tblcomment_ia.student_no')
 //         ->where('tblassmain_ai.class_code', $class_code)
 //         ->where('tblassmain_ai.term', $term)
 //         ->where('tblassmain_ai.student_no', $student_no)
 //         ->where('tblassmain_ai.deleted', '0')
 //         ->select(
+//             'tblcomment_ia.transid as transid',
+//             'tblcomment_ia.ct_remarks as comment',
 //             'tblsubject.subname',
 //             'tblclass.class_desc as class_name',
+//             'tblstudent.student_no',
 //             DB::raw("TRIM(CONCAT(COALESCE(tblstudent.fname, ''), ' ', COALESCE(tblstudent.mname, ''), ' ', COALESCE(tblstudent.lname, ''))) AS student_name"),
 //             DB::raw('COALESCE(tblassmain_ai.paper1, 0) as paper1'),
 //             DB::raw('COALESCE(tblassmain_ai.paper2, 0) as paper2'),
@@ -317,9 +218,28 @@ public function getComment(Request $request, $id)
 //         ->distinct()
 //         ->get();
 
-//     return response()->json($assessments);
-// }
+//     // Fetch student details
+//     $student = DB::table('tblstudent')
+//         ->where('student_no', $student_no)
+//         ->select(
+//             'student_no',
+//             DB::raw("TRIM(CONCAT(COALESCE(fname, ''), ' ', COALESCE(mname, ''), ' ', COALESCE(lname, ''))) AS student_name")
+//         )
+//         ->first();
 
+//         $student = DB::table('tblstudent')
+//         ->where('student_no', $student_no)
+//         ->select(
+//             'student_no',
+//             DB::raw("TRIM(CONCAT(COALESCE(fname, ''), ' ', COALESCE(mname, ''), ' ', COALESCE(lname, ''))) AS student_name")
+//         )
+//         ->first();
+
+//     return response()->json([
+//         'assessments' => $assessments,
+//         'student' => $student
+//     ]);
+// }
 
 public function fetchComment(Request $request)
 {
@@ -331,13 +251,17 @@ public function fetchComment(Request $request)
         ->join('tblsubject', 'tblassmain_ai.subcode', '=', 'tblsubject.subcode') // Only subjects with assessments
         ->join('tblstudent', 'tblassmain_ai.student_no', '=', 'tblstudent.student_no')
         ->leftJoin('tblclass', 'tblclass.class_code', '=', DB::raw("'$class_code'"))
-        ->leftJoin('tblcomment_ia', 'tblassmain_ai.student_no', '=', 'tblcomment_ia.student_no')
+        ->leftJoin('tblcomment_ia', function ($join) {
+            $join->on('tblassmain_ai.student_no', '=', 'tblcomment_ia.student_no')
+                 ->where('tblcomment_ia.deleted', '0'); // Only fetch comments that are not deleted
+        })
         ->where('tblassmain_ai.class_code', $class_code)
         ->where('tblassmain_ai.term', $term)
         ->where('tblassmain_ai.student_no', $student_no)
         ->where('tblassmain_ai.deleted', '0')
         ->select(
-            'tblcomment_ia.transid',
+            'tblcomment_ia.transid as transid',
+            'tblcomment_ia.ct_remarks as comment',
             'tblsubject.subname',
             'tblclass.class_desc as class_name',
             'tblstudent.student_no',
@@ -360,20 +284,11 @@ public function fetchComment(Request $request)
         )
         ->first();
 
-        $student = DB::table('tblstudent')
-        ->where('student_no', $student_no)
-        ->select(
-            'student_no',
-            DB::raw("TRIM(CONCAT(COALESCE(fname, ''), ' ', COALESCE(mname, ''), ' ', COALESCE(lname, ''))) AS student_name")
-        )
-        ->first();
-
     return response()->json([
         'assessments' => $assessments,
         'student' => $student
     ]);
 }
-
 
 
 }

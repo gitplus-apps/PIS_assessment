@@ -19,25 +19,28 @@
                     </button>
                 </li>
             </ul>
+</br>
 
             <div class="tab-content mt-3" id="assessmentTabsContent">
                 <!-- Filter Students Tab -->
-                <div class="col-md-4">
+                <div class="tab-pane fade show active" id="filterStudents" role="tabpanel" aria-labelledby="filter-tab">
+                    {{--<h4 class="mb-3 text-center text-primary">Students Assessment</h4>--}}
+                    <div class="col-md-4">
                     <label for="searchStudent" class="form-label fw-bold">Search Student</label>
                     <input type="text" class="form-control" id="searchStudent"
                         placeholder="Enter student name or number">
                 </div>
-                <div class="tab-pane fade show active" id="filterStudents" role="tabpanel" aria-labelledby="filter-tab">
-                    <h4 class="mb-3 text-center text-primary">Students Assessment</h4>
+</br>
 
                     <form id="filterForm" class="row g-3 align-items-end">
                         <div class="col-md-2">
                             <label for="term" class="form-label fw-bold">Term</label>
                             <select class="form-select select2" name="term" id="term">
-                                {{--<option value="1">Term 1</option>--}}
+                            <option value="">--Select Term--</option>
+                                <option value="1">Term 1</option>
                                 <option value="2">Term 2</option>
-                                {{--<option value="3">Term 3</option>
-                                <option value="4">Term 4</option> --}}
+                                <option value="3">Term 3</option>
+                                <option value="4">Term 4</option>
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -100,8 +103,7 @@
 
                 <!-- Report Tab -->
                 <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
-                    <form id="filterForm" class="mb-4">
-                        <div class="row">
+                    <form id="filterForm" class="row g-3 align-items-end">
                             <div class="col-md-3">
                                 <label for="class_code">Class</label>
                                 <select class="form-control select2" id="report_class_code" name="class_code">
@@ -132,9 +134,12 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <button type="button" class="btn btn-primary mt-3" onclick="fetchAssessments()"><i
-                                class="fas fa-filter"></i> Filter</button>
+                            <div class="col-md-3">
+                            <button type="button" class="btn btn-primary mt-3" onclick="fetchAssessments()"><i
+                                class="fas fa-filter"></i> Filter
+                            </button>
+                            </div>
+                        
                     </form>
 
                     <div class="container mt-4">
@@ -142,7 +147,7 @@
 
                         <div id="printSection"
                             style="border: 1px solid #ddd; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1); padding: 20px; width: 80%; margin: auto; font-family: Arial, sans-serif;">
-                            <h2 style="text-align: center; color: #007bff;">PIS – MODEL MONTESSORI SCHOOL</h2>
+                            <h3 style="text-align: center; color: #007bff;">PIS – MODEL MONTESSORI SCHOOL</h3>
                             <h5 style="text-align: center;">CAMBRIDGE ASSESSMENT INTERNATIONAL EDUCATION</h5>
                             <h6 style="text-align: center; font-weight: 600;">
                                 2024/2025 ACADEMIC YEAR TERM 2
@@ -158,25 +163,22 @@
                             <br>
                             
                             <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
-                            <table
-                                style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #000;"
-                                id="assessmentTable">
-                                <thead style="background-color: #333; color: #fff;">
-                                    <tr>
-                                        <th style="border: 1px solid #000; padding: 8px;">Subjects</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Paper 1 (50%)</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Paper 2 (50%)</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Final Score (100%)</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Grade</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="assessmentData">
-                                    <tr>
-                                        <td colspan="6" style="border: 1px solid #000; padding: 8px;">No data available
-                                        </td>
-                                    </tr>
-                                </tbody>
+                            <table class="table table-bordered table-striped text-center" id="assessmentTable">
+                            <thead class="table-dark">
+                            <tr>
+                               <th>Subjects</th>
+                               <th>Paper 1 (50%)</th>
+                               <th>Paper 2 (50%)</th>
+                               <th>Final Score (100%)</th>
+                               <th>Grade</th>
+                               <th>Remarks</th>
+                            </tr>
+                            </thead>
+                            <tbody id="assessmentData">
+                              <tr>
+                                <td colspan="6" class="text-muted">No data available</td>
+                              </tr>
+                            </tbody>
                             </table>
                         </br>
                         {{--<h5 style="text-align: center;">GRADING SYSTEM</h5>
@@ -236,6 +238,8 @@
                                 <h5>Class Teacher's Comments:</h5>
                                 <div id="comment"></div> 
                             </div>
+                        </br>
+                        </br>
                             <div style="margin-top: 20px; display: flex; justify-content: space-between;">
                                 <div>
                                     <p><strong>Sign:</strong> ____________________</p>
@@ -339,54 +343,114 @@
                 }).catch(error => console.error("Error generating PDF:", error));
             }
         </script>
-        <script>
-            function fetchAssessments() {
-                let class_code = document.getElementById('report_class_code')?.value.trim();
-                let term = document.getElementById('report_term')?.value.trim();
-                let student_no = document.getElementById('student_no')?.value.trim();
-                let subject_type = document.getElementById('subject_type')?.value.trim();
-                let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+<script>
 
-                console.log("Captured values:", {
-                    class_code,
-                    term,
-                    student_no,
-                    subject_type
-                });
+// function fetchAssessments() {
+//     let class_code = document.getElementById('report_class_code')?.value.trim();
+//     let term = document.getElementById('report_term')?.value.trim();
+//     let student_no = document.getElementById('student_no')?.value.trim();
+//     let subject_type = document.getElementById('subject_type')?.value.trim();
+//     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+//     console.log("Captured values:", { class_code, term, student_no, subject_type });
 
-                fetch('{{ route('newassessment.fetchAssessments') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
-                        },
-                        body: JSON.stringify({
-                            class_code,
-                            term,
-                            student_no,
-                            subject_type
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log({
-                            'current_d': data
-                        })
-                        let studentInfo = document.getElementById('student_info');
-                        studentInfo.innerHTML = `
-            <p><strong>Student Name:</strong> ${data[0].student_name}</p>
-            <p><strong>Class:</strong> ${data[0].class_name}</p>
-        `;              
-                        let comment = document.getElementById('comment');
-                        comment.innerHTML = `<h6>${data[0].ct_remarks}</h6>`;
+//     fetch('{{ route('newassessment.fetchAssessments') }}', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'X-CSRF-TOKEN': csrfToken
+//         },
+//         body: JSON.stringify({
+//             class_code,
+//             term,
+//             student_no,
+//             subject_type
+//         })
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         console.log({ 'current_d': data });
 
+//         let studentInfo = document.getElementById('student_info');
+//         let comment = document.getElementById('comment');
+//         let tbody = document.getElementById('assessmentData');
 
-                        let tbody = document.getElementById('assessmentData');
-                        tbody.innerHTML = '';
-                        if (data.length > 0) {
-                            data.forEach(assess => {
-                                tbody.innerHTML += `<tr>
+//         // Clear previous content
+//         studentInfo.innerHTML = '';
+//         comment.innerHTML = '';
+//         tbody.innerHTML = '';
+
+//         if (data.length > 0) {
+//             studentInfo.innerHTML = `
+//                 <p><strong>Student Name:</strong> ${data[0].student_name}</p>
+//                 <p><strong>Class:</strong> ${data[0].class_name}</p>
+//             `;              
+//             comment.innerHTML = `<h6>${data[0].ct_remarks}</h6>`;
+
+//             data.forEach(assess => {
+//                 tbody.innerHTML += `<tr>
+//                     <td>${assess.subname}</td>
+//                     <td>${assess.paper1 ?? 'N/A'}</td>
+//                     <td>${assess.paper2 ?? 'N/A'}</td>
+//                     <td>${assess.total_score ?? 'N/A'}</td>
+//                     <td>${assess.grade}</td>
+//                     <td>${assess.t_remarks}</td>
+//                 </tr>`;
+//             });
+//         } else {
+//             showNoDataMessage();
+//         }
+//     })
+//     .catch(error => {
+//         console.error("Error fetching assessments:", error);
+//         showNoDataMessage();
+//     });
+// }
+
+function fetchAssessments() {
+    let class_code = document.getElementById('report_class_code')?.value.trim();
+    let term = document.getElementById('report_term')?.value.trim();
+    let student_no = document.getElementById('student_no')?.value.trim();
+    let subject_type = document.getElementById('subject_type')?.value.trim();
+    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    console.log("Captured values:", { class_code, term, student_no, subject_type });
+
+    fetch('{{ route('newassessment.fetchAssessments') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({
+            class_code,
+            term,
+            student_no,
+            subject_type
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log({ 'current_d': data });
+
+        let studentInfo = document.getElementById('student_info');
+        let comment = document.getElementById('comment');
+        let tbody = document.getElementById('assessmentData');
+
+        // Clear previous table data
+        tbody.innerHTML = '';
+
+        if (data.length > 0) {
+            // Display student details
+            studentInfo.innerHTML = `
+                <p><strong>Student Name:</strong> ${data[0].student_name}</p>
+                <p><strong>Class:</strong> ${data[0].class_name}</p>
+            `;              
+            comment.innerHTML = `<h6>${data[0].ct_remarks}</h6>`;
+
+            // Populate assessment data
+            data.forEach(assess => {
+                tbody.innerHTML += `<tr>
                     <td>${assess.subname}</td>
                     <td>${assess.paper1 ?? 'N/A'}</td>
                     <td>${assess.paper2 ?? 'N/A'}</td>
@@ -394,14 +458,23 @@
                     <td>${assess.grade}</td>
                     <td>${assess.t_remarks}</td>
                 </tr>`;
-                            });
-                        } else {
-                            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No data available</td></tr>';
-                        }
-                    })
-                    .catch(error => console.error("Error fetching assessments:", error));
+            });
+        } else {
+            // Ensure student info is displayed even when no assessment data exists
+            studentInfo.innerHTML = `
+                <p><strong>Student Name:</strong> ${document.getElementById('report_student_name')?.value || 'N/A'}</p>
+                <p><strong>Class:</strong> ${document.getElementById('report_class_name')?.value || 'N/A'}</p>
+            `;
+            comment.innerHTML = `<h6>No comments available</h6>`;
+            showNoDataMessage();
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching assessments:", error);
+        showNoDataMessage();
+    });
+}
 
-            }
         </script>
         <script>
             $(document).ready(function() {
@@ -632,7 +705,7 @@
                         text: "This action will delete the assessment permanently!",
                         icon: "warning",
                         showCancelButton: true,
-                        confirmButtonText: "Yes, delete it!",
+                        confirmButtonText: "Delete!",
                         cancelButtonText: "Cancel"
                     }).then((result) => {
                         if (result.isConfirmed) {
