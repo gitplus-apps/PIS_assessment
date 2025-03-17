@@ -26,7 +26,7 @@ class User extends Authenticatable
         self::TYPE_STUDENT,
     ];
 
-    protected $table = "tbluser_ass";
+    protected $table = "tbluser";
     public $incrementing = false;
     protected $primaryKey = "id";
     /**

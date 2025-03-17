@@ -6,13 +6,13 @@
             @php
                 if (Auth::user()->usertype === 'ADM') {
                     $parent = DB::table('tblmodule')
-                        ->select('tbluser_ass_module_privileges.mod_read', 'tbluser_ass_module_privileges.userid', 'tblmodule.mod_name', 'tblmodule.mod_label', 'tblmodule.mod_url', 'tblmodule.mod_icon', 'tblmodule.mod_id')
-                        ->join('tbluser_ass_module_privileges', 'tblmodule.mod_id', 'tbluser_ass_module_privileges.mod_id')
-                        ->where('tbluser_ass_module_privileges.userid', Auth::user()->email)
-                        ->where('tbluser_ass_module_privileges.school_code', Auth::user()->school_code)
+                        ->select('tbluser_module_privileges.mod_read', 'tbluser_module_privileges.userid', 'tblmodule.mod_name', 'tblmodule.mod_label', 'tblmodule.mod_url', 'tblmodule.mod_icon', 'tblmodule.mod_id')
+                        ->join('tbluser_module_privileges', 'tblmodule.mod_id', 'tbluser_module_privileges.mod_id')
+                        ->where('tbluser_module_privileges.userid', Auth::user()->email)
+                        ->where('tbluser_module_privileges.school_code', Auth::user()->school_code)
                         ->where('tblmodule.mod_status', '1')
                         ->where('tblmodule.system_mod', '1')
-                        ->where('tbluser_ass_module_privileges.mod_read', '1')
+                        ->where('tbluser_module_privileges.mod_read', '1')
                         ->orderBy('tblmodule.arrange', 'ASC')
                         ->get();
                      
@@ -21,14 +21,14 @@
                 
                 if (Auth::user()->usertype === 'STA') {
                     $parent = DB::table('tblmodule')
-                        ->select('tbluser_ass_module_privileges.mod_read', 'tbluser_ass_module_privileges.userid', 'tblmodule.mod_name', 'tblmodule.mod_label', 'tblmodule.mod_url', 'tblmodule.mod_icon', 'tblmodule.mod_id')
-                        ->join('tbluser_ass_module_privileges', 'tblmodule.mod_id', 'tbluser_ass_module_privileges.mod_id')
-                        ->where('tbluser_ass_module_privileges.userid', Auth::user()->email)
-                        ->where('tbluser_ass_module_privileges.school_code', Auth::user()->school_code)
+                        ->select('tbluser_module_privileges.mod_read', 'tbluser_module_privileges.userid', 'tblmodule.mod_name', 'tblmodule.mod_label', 'tblmodule.mod_url', 'tblmodule.mod_icon', 'tblmodule.mod_id')
+                        ->join('tbluser_module_privileges', 'tblmodule.mod_id', 'tbluser_module_privileges.mod_id')
+                        ->where('tbluser_module_privileges.userid', Auth::user()->email)
+                        ->where('tbluser_module_privileges.school_code', Auth::user()->school_code)
                         // ->where('tblmodule.mod_status','1')
                         ->where('tblmodule.teacher_mod', '1')
-                        ->where('tbluser_ass_module_privileges.mod_read', '1')
-                        ->orderBy('tbluser_ass_module_privileges.mod_id', 'ASC')
+                        ->where('tbluser_module_privileges.mod_read', '1')
+                        ->orderBy('tbluser_module_privileges.mod_id', 'ASC')
                         ->get();
                        
                     $parentMods = ['parent' => $parent];
@@ -36,14 +36,14 @@
 
                 if (Auth::user()->usertype === 'STU') {
                     $parent = DB::table('tblmodule')
-                        ->select('tbluser_ass_module_privileges.mod_read', 'tbluser_ass_module_privileges.userid', 'tblmodule.mod_name', 'tblmodule.mod_label', 'tblmodule.mod_url', 'tblmodule.mod_icon', 'tblmodule.mod_id')
-                        ->join('tbluser_ass_module_privileges', 'tblmodule.mod_id', 'tbluser_ass_module_privileges.mod_id')
-                        ->where('tbluser_ass_module_privileges.userid', Auth::user()->email)
-                        ->where('tbluser_ass_module_privileges.school_code', Auth::user()->school_code)
+                        ->select('tbluser_module_privileges.mod_read', 'tbluser_module_privileges.userid', 'tblmodule.mod_name', 'tblmodule.mod_label', 'tblmodule.mod_url', 'tblmodule.mod_icon', 'tblmodule.mod_id')
+                        ->join('tbluser_module_privileges', 'tblmodule.mod_id', 'tbluser_module_privileges.mod_id')
+                        ->where('tbluser_module_privileges.userid', Auth::user()->email)
+                        ->where('tbluser_module_privileges.school_code', Auth::user()->school_code)
                         // ->where('tblmodule.mod_status','1')
                         ->where('tblmodule.student_mod', '1')
-                        ->where('tbluser_ass_module_privileges.mod_read', '1')
-                        ->orderBy('tbluser_ass_module_privileges.mod_id', 'ASC')
+                        ->where('tbluser_module_privileges.mod_read', '1')
+                        ->orderBy('tbluser_module_privileges.mod_id', 'ASC')
                         ->get();
                        
                     $parentMods = ['parent' => $parent];

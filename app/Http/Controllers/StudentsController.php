@@ -240,7 +240,7 @@ class StudentsController extends Controller
 
                 ]);
 
-                DB::table("tbluser_ass")->insert([
+                DB::table("tbluser")->insert([
                     "school_code" => $school_code,
                     "userid" => $studentNo,
                     "email" => $request->email,
@@ -268,7 +268,7 @@ class StudentsController extends Controller
                 $mods = DB::table("tblmodule")->where("student_mod", "1")->get();
 
                 foreach ($mods as $mod) {
-                    DB::table("tbluser_ass_module_privileges")->insert([
+                    DB::table("tbluser_module_privileges")->insert([
                         "transid" => $this->generateTransid(),
                         "userid" => $request->email,
                         "school_code" => $request->school_code,
@@ -417,12 +417,12 @@ class StudentsController extends Controller
                     "modifyuser" => $request->createuser,
                 ]);
 
-                DB::table("tbluser_ass")->where("userid", $student->student_no)->update([
+                DB::table("tbluser")->where("userid", $student->student_no)->update([
                     "userid" => $request->student_id,
                     "email" => $request->student_id,
                 ]);
 
-                DB::table("tbluser_ass_module_privileges")->where("userid", $student->student_no)->update([
+                DB::table("tbluser_module_privileges")->where("userid", $student->student_no)->update([
                     "userid" => $request->student_id,
                 ]);
 
@@ -480,10 +480,10 @@ class StudentsController extends Controller
         $student = DB::table("tblstudent")
             ->where("transid", $id)->first();
 
-        DB::table("tbluser_ass_module_privileges")
+        DB::table("tbluser_module_privileges")
             ->where("userid", $student->student_no)->delete();
 
-        DB::table("tbluser_ass")
+        DB::table("tbluser")
             ->where("userid", $student->student_no)->update([
                 "deleted" => 1
             ]);
@@ -519,7 +519,7 @@ class StudentsController extends Controller
         $student = DB::table("tblstudent")
             ->where("transid", $id)->first();
 
-        DB::table("tbluser_ass")
+        DB::table("tbluser")
             ->where("userid", $student->student_no)->update([
                 "deleted" => 0
             ]);

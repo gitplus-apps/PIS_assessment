@@ -179,8 +179,8 @@ class staffcontroller extends Controller
             [
                 "fname" => 'required',
                 "lname" => 'required',
-                "phone" => 'required|numeric|unique:tblstaff,phone|unique:tbluser_ass,phone',
-                "email" => 'required|email|unique:tblstaff,email|unique:tbluser_ass,email',
+                "phone" => 'required|numeric|unique:tblstaff,phone|unique:tbluser,phone',
+                "email" => 'required|email|unique:tblstaff,email|unique:tbluser,email',
             ],
             [
                 "fname.required" => "no saff's firstname provided",
@@ -249,14 +249,14 @@ class staffcontroller extends Controller
                     $mods = DB::table("tblmodule")->where("teacher_mod", "=", "1")->get();
 
                     foreach ($mods as $mod) {
-                        $exists = DB::table("tbluser_ass_module_privileges")
+                        $exists = DB::table("tbluser_module_privileges")
                         ->where("userid", $request->email)
                         ->where("school_code", $request->school_code)
                         ->where("mod_id", $mod->mod_id)
                         ->exists();
                         
                     if (!$exists) {
-                        DB::table("tbluser_ass_module_privileges")->insert([
+                        DB::table("tbluser_module_privileges")->insert([
                             "userid" => $request->email,
                             "school_code" => $request->school_code,
                             "mod_read" => "1",
@@ -274,7 +274,7 @@ class staffcontroller extends Controller
                     ]);
                 }
 
-                DB::table("tbluser_ass")->insert([
+                DB::table("tbluser")->insert([
                     "id" => null,
                     // "id" => strtoupper(bin2hex(random_bytes(5))),
                     "school_code" => $request->school_code,
