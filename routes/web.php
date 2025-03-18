@@ -102,7 +102,7 @@ Route::prefix('lecturer')->middleware('auth')->group(function () {
     Route::get('/assessment', [AssessmentController::class, 'index'])->name('assessment');
     Route::get('/logout', function () {
         Auth::logout();
-        return redirect("/");
+        return redirect("/login");
     });
 });
 
