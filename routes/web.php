@@ -44,7 +44,7 @@ Route::middleware(['auth'])->group(function(){
     Route::get('supplier',[SupplierController::class,'showPage']);
 });
 
-Route::get('/', [Routecontroller::class, 'dashboard'])->name('dashboard');
+Route::get('/dashboard', [Routecontroller::class, 'dashboard'])->name('dashboard');
 
 Route::get('/staff/dashboard', [StaffController::class, 'dashboard'])->name('staff.dashboard');
 Route::get('/staff/students/{course_id}', [StaffController::class, 'viewStudents'])->name('staff.students');
@@ -113,13 +113,13 @@ Route::get('/assessment', [AssessmentController::class, 'index'])->name('assessm
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    
+
     Route::get('/notices', [NoticeController::class, 'index'])->name('notice.index');
     Route::post('/notices', [NoticeController::class, 'store'])->name('notice.store');
     Route::get('/notices/{id}/edit', [NoticeController::class, 'edit'])->name('notice.edit');
     Route::put('/notices/{id}', [NoticeController::class, 'update'])->name('notice.update');
     Route::delete('/notices/{id}', [NoticeController::class, 'delete'])->name('notice.delete');
-    
+
 });
 
 Route::get("/assessment/staff/{schoolCode}", [AssessmentController::class, 'staff'])->middleware('auth');
@@ -181,7 +181,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/newassessment', [NewAssessmentController::class, 'index'])->name('newassessment.index'); 
+    Route::get('/newassessment', [NewAssessmentController::class, 'index'])->name('newassessment.index');
     Route::post('/newassessment/store', [NewAssessmentController::class, 'store'])->name('newassessment.store');
     Route::get('/newassessment/edit/{transid}', [NewAssessmentController::class, 'edit'])->name('newassessment.edit');
     Route::post('/newassessment/update/{transid}', [NewAssessmentController::class, 'update'])->name('newassessment.update');
@@ -193,7 +193,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-Route::get('/comment', [CommentController::class, 'index'])->name('comment.index'); 
+Route::get('/comment', [CommentController::class, 'index'])->name('comment.index');
 Route::post('/comment/store', [CommentController::class, 'store'])->name('comment.store');
 Route::get('/comment/edit/{transid}', [CommentController::class, 'edit'])->name('comment.edit');
 Route::post('/comment/update', [CommentController::class, 'update'])->name('comment.update');

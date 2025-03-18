@@ -49,7 +49,7 @@ class Routecontroller extends Controller
         if (Auth::user()->usertype === 'STA') {
             $schoolCode = Auth::user()->school->school_code;
         $staffNo = Auth::user()->userid;
-    
+
         $staff = DB::table("tblstaff")->where('school_code', $schoolCode)->where("deleted", 0)->count();
         $depart = DB::table("tbldepart")->where('school_code', $schoolCode)->where("deleted", 0)->count();
         $prog = DB::table("tblprog")->where('school_code', $schoolCode)->where("deleted", 0)->count();
@@ -60,14 +60,14 @@ class Routecontroller extends Controller
             ->where('tblsubject.school_code', $schoolCode)
             ->where('tblsubject_assignment.staffno', $staffNo)
             ->count();
-    
+
         $newCourses = DB::table('tblsubject')->select('tblsubject.subcode')
             ->join('tblsubject_assignment', "tblsubject_assignment.subcode", 'tblsubject.subcode')
             ->where('tblsubject.deleted', '0')
             ->where('tblsubject_assignment.deleted', '0')
             ->where('tblsubject_assignment.staffno', $staffNo)
             ->pluck('subcode')->toArray();
-    
+
         $students = DB::table("tblgrade")
             ->join("tblstudent", "tblstudent.current_grade", "tblgrade.grade_code")
             ->join("tblsubject", "tblsubject.subcode", "tblsubject.subcode")
@@ -86,7 +86,7 @@ class Routecontroller extends Controller
             ->where('tblsubject_assignment.staffno', $staffNo)
             ->select('tblsubject.subcode', 'tblsubject.subname')
             ->get();
-    
+
             $studentsD = DB::table("tblgrade")
             ->join("tblstudent", "tblstudent.student_no", "=", "tblgrade.grade_code")
             ->join("tblsubject", "tblsubject.subcode", "=", "tblsubject.subcode")
@@ -108,8 +108,8 @@ class Routecontroller extends Controller
             ->where("tblsubject.deleted", 0)
             ->where("tblgrade.deleted", 0)
             ->paginate(10);
-        
-    
+
+
         return view('staff.staff_dashboard', [
             "courses" => $courses,
             "coursesList" => $coursesList,
@@ -177,7 +177,7 @@ class Routecontroller extends Controller
 
                 $user = auth()->user();
                 $school_code = $user->school_code;
-                
+
                 $totalGradePoints = 0;
                 $totalCreditUnits = 0;
                 $gpa = 0;
@@ -188,7 +188,7 @@ class Routecontroller extends Controller
             ->where('tblassmain.deleted', '0')
             ->where('tblassmain.student_no', $user->userid)
             ->select(
-                'tblassmain.*', 
+                'tblassmain.*',
                 'tblsubject.subname as subname',
                 'tblsubject.credit' // Fetching credit unit
             )
@@ -207,14 +207,14 @@ class Routecontroller extends Controller
             return $grade;
         });
 
-        
+
         if ($totalCreditUnits > 0) {
             $gpa = number_format($totalGradePoints / $totalCreditUnits, 2, '.', '');
         } else {
             $gpa = number_format(0, 2, '.', ''); // Ensure GPA is always in decimal format
         }
 
-        $performance = DB::table('tblassmain') 
+        $performance = DB::table('tblassmain')
     ->join('tblsubject', 'tblassmain.subcode', '=', 'tblsubject.subcode')
     ->where('tblassmain.school_code', $school_code)
     ->where('tblassmain.deleted', '0')
@@ -374,7 +374,7 @@ $averageScores = $performance->pluck('avg_score')->toArray();
             ->where('school_code', Auth::user()->school->school_code)
             ->where('deleted', '0')
             ->get();
-        //fetchinng batches 
+        //fetchinng batches
         $batches = DB::table('tblbatch')
             ->where('school_code', Auth::user()->school->school_code)
             ->where('deleted', '0')
@@ -389,7 +389,7 @@ $averageScores = $performance->pluck('avg_score')->toArray();
             ->where('school_code', Auth::user()->school->school_code)
             ->where('deleted', '0')
             ->get();
-        //selecting  programs 
+        //selecting  programs
         $programs = DB::table('tblprog')
             ->where('school_code', Auth::user()->school->school_code)
             ->where('deleted', '0')
@@ -455,7 +455,7 @@ $averageScores = $performance->pluck('avg_score')->toArray();
             ->where('school_code', Auth::user()->school->school_code)
             ->where('deleted', '0')
             ->get();
-        //selecting  programs 
+        //selecting  programs
         $programs = DB::table('tblprog')
             ->where('school_code', Auth::user()->school->school_code)
             ->where('deleted', '0')
@@ -487,7 +487,7 @@ $averageScores = $performance->pluck('avg_score')->toArray();
             ->where('school_code', Auth::user()->school->school_code)
             ->where('deleted', '0')
             ->get();
-        //fetchinng batches 
+        //fetchinng batches
         $batches = DB::table('tblbatch')
             ->where('school_code', Auth::user()->school->school_code)
             ->where('deleted', '0')
@@ -622,7 +622,7 @@ $averageScores = $performance->pluck('avg_score')->toArray();
         ]);
     }
 
-    
+
 
 
     public function messaging()
@@ -819,7 +819,7 @@ $averageScores = $performance->pluck('avg_score')->toArray();
 
     public function services(){
         $stuServices = DB::table('tblservice_student')
-        ->select('tblservice_student.*', 'tblstudent.fname', 'tblstudent.mname', 
+        ->select('tblservice_student.*', 'tblstudent.fname', 'tblstudent.mname',
         'tblstudent.lname', 'tblservices.service_name')
         ->join('tblstudent', 'tblservice_student.student_no', 'tblstudent.student_no')
         ->join('tblservices', 'tblservice_student.service_code', 'tblservices.service_code')

@@ -181,7 +181,7 @@ Route::prefix('user')->group(function () {
     Route::get("/filteruser/{userdata}", [UserManagementController::class, 'filterUser']);
 });
 
-//Route for message 
+//Route for message
 // Route::resource("message", MessageSMSController::class);
 Route::prefix("message")->group(function () {
     Route::get("sms/{schoolCode}", [AdminMessageController::class, "fetchSms"]);

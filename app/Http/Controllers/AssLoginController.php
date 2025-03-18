@@ -56,7 +56,7 @@ class AssLoginController extends Controller
             'userid' => Auth::user()->userid ?? 'N/A'
         ]);
 
-        return redirect()->intended('/newassessment'); // Redirect to intended page
+        return redirect()->intended('/dashboard'); // Redirect to intended page
     }
 
     return back()->with('fail', 'Login failed. Wrong email/username or password');
