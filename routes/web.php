@@ -206,7 +206,7 @@ Route::post('/comment/delete', [CommentController::class, 'delete'])->name('comm
 
 Route::get('/logout', function () {
     Auth::logout();
-    return redirect("/");
+    return redirect("/login");
 });
 
 Route::get('/forgot_password', function () {
