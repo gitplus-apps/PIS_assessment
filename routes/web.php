@@ -44,6 +44,14 @@ Route::middleware(['auth'])->group(function(){
     Route::get('supplier',[SupplierController::class,'showPage']);
 });
 
+Route::get('/', function(){
+    if(Auth::check()){
+        return redirect('/dashboard');
+    }else{
+        return redirect('/login');
+    }
+});
+
 Route::get('/dashboard', [Routecontroller::class, 'dashboard'])->name('dashboard');
 
 Route::get('/staff/dashboard', [StaffController::class, 'dashboard'])->name('staff.dashboard');
