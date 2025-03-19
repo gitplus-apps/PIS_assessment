@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
@@ -16,7 +15,7 @@ class AssLoginController extends Controller
     public function login(Request $request): RedirectResponse|Redirector
 {
     $validator = Validator::make($request->all(), [
-        'email' => 'required', // Can be email or username
+        'email' => 'required',
         'password' => 'required',
     ]);
 
@@ -48,7 +47,7 @@ class AssLoginController extends Controller
     }
 
     if (Auth::attempt($credentials)) {
-        $request->session()->regenerate(); // Prevent session fixation attacks
+        $request->session()->regenerate();
 
         Log::info('User logged in', [
             'user_id' => Auth::id(),
@@ -56,7 +55,7 @@ class AssLoginController extends Controller
             'userid' => Auth::user()->userid ?? 'N/A'
         ]);
 
-        return redirect()->intended('/dashboard'); // Redirect to intended page
+        return redirect()->intended('/dashboard');
     }
 
     return back()->with('fail', 'Login failed. Wrong email/username or password');
