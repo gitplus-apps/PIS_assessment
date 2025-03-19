@@ -15,7 +15,7 @@ class ClassBreakdownResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "class" => $this->prog_desc,
+            "class" => $this->current_grade,
             "male" => $this->males,
             "female" => $this->females,
             "total" => (int)$this->males + (int)$this->females,

@@ -8,49 +8,42 @@ use Illuminate\Support\Facades\DB;
 
 class DashbaordController extends Controller
 {
-    public function fetchTotalStudentByProg($schoolCode)
-    {
-        $total = DB::table("tblstudent")
-            ->selectRaw("count(tblstudent.prog) as total_grade, tblprog.prog_desc")
-            ->join("tblprog", "tblstudent.prog", "tblprog.prog_code")
-            ->where("tblstudent.school_code", $schoolCode)
-            ->where("tblprog.school_code", $schoolCode)
-            ->where("tblprog.deleted", "0")
-            ->where("tblstudent.deleted", "0")
-            ->whereNotNull("tblstudent.prog")
-            ->groupBy("tblprog.prog_desc")
-            ->get();
 
-        return response()->json([
-            "data" => $total,
-        ]);
-    }
+public function fetchTotalStudentByProg($schoolCode)
+{
+    $total = DB::table("tblstudent")
+        ->selectRaw("COUNT(student_no) as total_students, current_grade")
+        ->where("school_code", $schoolCode)
+        ->where("deleted", "0")
+        ->groupBy("current_grade")
+        ->get();
 
-    public function fetchClassBreakdown($schoolCode)
-    {
-        $breakdowns = DB::table("tblstudent")
-            ->join('tblprog', 'tblprog.prog_code', '=', 'tblstudent.prog')
-            ->select([
-                "tblprog.prog_desc",
-                DB::raw("sum(case when tblstudent.`gender` = 'M' then 1 else 0 end) as 'males'"),
-                DB::raw("sum(case when tblstudent.`gender` = 'F' then 1 else 0 end) as 'females'"),
-            ])
-            ->where("tblstudent.deleted", "0")
-            ->where("tblprog.deleted", "0")
-            ->where("tblstudent.school_code", $schoolCode)
-            ->where("tblprog.school_code", $schoolCode)
-            ->groupBy("tblprog.prog_desc")
-            ->orderBy("tblprog.prog_desc")
-            ->get();
-
-        return response()->json([
-            "ok" => true,
-            "msg" => "Request successful",
-            "data" => ClassBreakdownResource::collection($breakdowns),
-        ]);
-    }
+    return response()->json([
+        "data" => $total,
+    ]);
+}
 
 
 
 
+public function fetchClassBreakdown($schoolCode)
+{
+    $breakdowns = DB::table("tblstudent")
+        ->select([
+            "tblstudent.current_grade",
+            DB::raw("SUM(CASE WHEN tblstudent.gender = 'M' THEN 1 ELSE 0 END) AS males"),
+            DB::raw("SUM(CASE WHEN tblstudent.gender = 'F' THEN 1 ELSE 0 END) AS females"),
+        ])
+        ->where("tblstudent.deleted", "0")
+        ->where("tblstudent.school_code", $schoolCode)
+        ->groupBy("tblstudent.current_grade") // ✅ Group by grade only
+        ->orderBy("tblstudent.current_grade")
+        ->get();
+
+    return response()->json([
+        "ok" => true,
+        "msg" => "Request successful",
+        "data" => ClassBreakdownResource::collection($breakdowns),
+    ]);
+}
 }

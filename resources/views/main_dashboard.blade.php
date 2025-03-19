@@ -1,16 +1,17 @@
 @extends('layout.app')
 
 @section('page-content')
-<style>
-    /* zoom icon on hover */
-    .zoom {
-        transition: transform .3s;
-    }
-    .zoom:hover {
-        transform: scale(1.1);
-        /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
-    }
-</style>
+    <style>
+        /* zoom icon on hover */
+        .zoom {
+            transition: transform .3s;
+        }
+
+        .zoom:hover {
+            transform: scale(1.1);
+            /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+        }
+    </style>
     <!-- modules-->
     <div class="row">
         <div class="col-xl-3 col-md-6 mb-4">
@@ -130,20 +131,6 @@
             </div>
         </div>
     </div>
-    <footer class="footer">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2020 <a
-                            href="https://www.bootstrapdash.com/" class="text-muted" target="_blank">Bootstrapdash</a>.
-                        All rights reserved.</span>
-                    <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center text-muted">Free <a
-                            href="https://www.bootstrapdash.com/" class="text-muted" target="_blank">Bootstrap
-                            dashboard</a> templates from Bootstrapdash.com</span>
-                </div>
-            </div>
-        </div>
-    </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.4.1/chart.min.js"
         integrity="sha512-5vwN8yor2fFT9pgPS9p9R7AszYaNn0LkQElTXIsZFCL7ucT8zDCAqlQXDdaqgA1mZP47hdvztBMsIoFxq/FyyQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -183,9 +170,10 @@
                 let totals = [];
                 let labels = [];
 
+
                 data.data.forEach(function(grade) {
                     totals.push(grade.total_grade);
-                    labels.push(grade.prog_desc);
+                    labels.push(grade.current_grade);
                 });
 
 
