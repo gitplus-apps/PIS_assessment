@@ -52,8 +52,14 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="col-md-4">
+                         <label for="subcode" class="form-label fw-bold">Subject</label>
+                          <select class="form-control select2" id="subcode" name="subcode">
+                            <option value="">Select Subject</option>
+                          </select>
+                        </div>
+
+                        {{--<div class="col-md-4">
                             <label for="subcode" class="form-label fw-bold">Subject</label>
                             <select class="form-select select2" name="subcode" id="subcode">
                                 <option value="">--Select Subject--</option>
@@ -61,7 +67,7 @@
                                     <option value="{{ $subject->subcode }}">{{ $subject->subname }}</option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div>--}}
 
                         
 
@@ -509,6 +515,34 @@ function fetchAssessments() {
                         filterTab.classList.remove("active");
                     });
                 });
+
+
+                
+    $('#class_code').change(function() {
+        let classCode = $(this).val();
+
+        if (classCode) {
+            $.ajax({
+                url: "{{ route('getSubjectsByClass') }}",
+                method: "GET",
+                data: { class_code: classCode },
+                success: function(response) {
+                    let subjectDropdown = $('#subcode');
+                    subjectDropdown.empty();
+                    subjectDropdown.append('<option value="">Select Subject</option>');
+
+                    if (response.subjects.length > 0) {
+                        response.subjects.forEach(subject => {
+                            subjectDropdown.append(
+                                `<option value="${subject.subcode}">${subject.subname}</option>`
+                            );
+                        });
+                    }
+                }
+            });
+        }
+    });
+
 
 
                 let studentTable = $('#studentTable tbody');
