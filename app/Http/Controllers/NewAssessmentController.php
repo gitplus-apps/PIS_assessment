@@ -71,56 +71,31 @@ class NewAssessmentController extends Controller{
     }
 
 
-//     public function filter(Request $request)
-// {
-//     $request->validate([
-//         'class_code' => 'required',
-//         'subcode' => 'required',
-//         'term' => 'required',
-//     ]);
+    public function getSubjectsByClass(Request $request)
+{
+    $class = DB::table('tblclass')
+        ->where('class_code', $request->class_code)
+        ->where('deleted', '0')
+        ->first();
 
-//     $classCode = $request->class_code;
-//     $subcode = $request->subcode;
-//     $term = $request->term;
+    if (!$class) {
+        return response()->json(['subjects' => []]);
+    }
 
-//     // Fetch students from tblstudent with a LEFT JOIN on tblassmain_ai
-//     $students = DB::table('tblstudent')
-//         ->leftJoin('tblassmain_ai', function ($join) {
-//             $join->on('tblassmain_ai.student_no', '=', 'tblstudent.student_no');
-//         })
-//         ->where('tblstudent.current_class', $classCode)
-//         ->where('tblstudent.deleted', '0') // Exclude deleted students
-//         ->where(function ($query) use ($classCode, $subcode, $term) {
-//             $query->where('tblassmain_ai.class_code', $classCode)
-//                   ->where('tblassmain_ai.subcode', $subcode)
-//                   ->where('tblassmain_ai.term', $term)
-//                   ->where('tblassmain_ai.deleted', '0')
-//                   ->orWhereNull('tblassmain_ai.student_no'); // Ensure all students are included
-//         })
-//         ->select(
-//             'tblstudent.student_no',
-//             'tblstudent.fname',
-//             'tblstudent.mname',
-//             'tblstudent.lname',
-//             'tblstudent.current_class',
-//             DB::raw('COALESCE(tblassmain_ai.transid, tblstudent.transid) as transid'),
-//             DB::raw('IFNULL(tblassmain_ai.class_code, "' . $classCode . '") as class_code'),
-//             DB::raw('IFNULL(tblassmain_ai.subcode, "' . $subcode . '") as subcode'),
-//             DB::raw('IFNULL(tblassmain_ai.term, "' . $term . '") as term'),
-//             DB::raw('IFNULL(tblassmain_ai.deleted, "0") as deleted'),
-//             DB::raw('COALESCE(tblassmain_ai.paper1, "0") as paper1'),
-//             DB::raw('COALESCE(tblassmain_ai.paper2, "0") as paper2'),
-//             DB::raw('COALESCE(tblassmain_ai.total_score, "0") as total_score'),
-//             DB::raw('COALESCE(tblassmain_ai.grade, "Ungraded") as grade')
-//         )
-//         ->orderBy("tblstudent.fname", "asc")
-//         ->get();
+    $gradeCode = $class->grade_code;
+    $staffNo = auth()->user()->userid;
 
-//     return response()->json([
-//         'ok' => true,
-//         'students' => $students,
-//     ]);
-// }
+    $subjects = DB::table('tblsubject_assignment')
+        ->join('tblsubject', 'tblsubject_assignment.subcode', '=', 'tblsubject.subcode')
+        ->where('tblsubject_assignment.staffno', $staffNo)
+        ->where('tblsubject_assignment.grade_code', $gradeCode)
+        ->where('tblsubject_assignment.deleted', '0')
+        ->select('tblsubject.subname', 'tblsubject.subcode')
+        ->get();
+
+    return response()->json(['subjects' => $subjects]);
+}
+
 
 public function filter(Request $request)
 {
@@ -331,70 +306,6 @@ public function destroy(Request $request) {
 }
 
 
-// public function getAssessment(Request $request, $id)
-// {
-//     // Get filter values from the request
-//     $classCode = $request->input('class_code', '');
-//     $subcode = $request->input('subcode', '');
-//     $term = $request->input('term', '');
-
-//     $assessment = DB::table("tblstudent")
-//         ->leftJoin("tblassmain_ai", function ($join) use ($subcode) {
-//             $join->on("tblstudent.student_no", "=", "tblassmain_ai.student_no")
-//                  //->on("tblstudent.admterm", "=", "tblassmain_ai.term")
-//                  ->on("tblstudent.current_class", "=", "tblassmain_ai.class_code")
-//                  ->on(DB::raw("COALESCE(tblassmain_ai.subcode, '')"), "=", DB::raw("'$subcode'"));
-//         })
-//         ->leftJoin("tblclass", "tblstudent.current_class", "=", "tblclass.class_code")
-//         ->select(
-//             "tblstudent.student_no",
-//             "tblstudent.transid",
-//             "tblstudent.school_code",
-//             DB::raw("CONCAT(tblstudent.fname, ' ', COALESCE(tblstudent.mname, ''), ' ', tblstudent.lname) AS student_name"),
-//             DB::raw("COALESCE(tblclass.class_desc, '') AS course_name"),
-//             DB::raw("COALESCE(tblassmain_ai.transid, '') AS assessment_transid"),
-//             DB::raw('IFNULL(tblassmain_ai.class_code, "' . $classCode . '") AS class_code'),
-//             DB::raw('"' . $subcode . '" AS subcode'),
-//             DB::raw('IFNULL(tblassmain_ai.term, "' . $term . '") AS term'),
-//             DB::raw("COALESCE(tblassmain_ai.deleted, '0') AS deleted"),
-//             DB::raw('COALESCE(tblassmain_ai.transid, tblstudent.transid) as transid'),
-
-//             // Ensure paper1 and paper2 are 0 if there is no exact match in tblassmain_ai
-//             DB::raw("
-//                 CASE
-//                     WHEN tblassmain_ai.student_no IS NULL THEN '0'
-//                     WHEN tblassmain_ai.subcode IS NULL OR tblassmain_ai.subcode = '' THEN '0'
-//                     ELSE COALESCE(tblassmain_ai.paper1, '0')
-//                 END AS paper1
-//             "),
-//             DB::raw("
-//                 CASE
-//                     WHEN tblassmain_ai.student_no IS NULL THEN '0'
-//                     WHEN tblassmain_ai.subcode IS NULL OR tblassmain_ai.subcode = '' THEN '0'
-//                     ELSE COALESCE(tblassmain_ai.paper2, '0')
-//                 END AS paper2
-//             "),
-//             DB::raw("
-//                 CASE
-//                     WHEN tblassmain_ai.student_no IS NULL THEN '0'
-//                     WHEN tblassmain_ai.subcode IS NULL OR tblassmain_ai.subcode = '' THEN '0'
-//                     ELSE COALESCE(tblassmain_ai.total_score, '0')
-//                 END AS total_score
-//             ")
-//         )
-//         ->where(function ($query) use ($id) {
-//             $query->where("tblstudent.transid", $id)
-//                   ->orWhere("tblassmain_ai.transid", $id);
-//             })
-//         ->first();
-
-//     if (!$assessment) {
-//         return response()->json(['error' => 'Assessment not found', 'query_id' => $id], 404);
-//     }
-
-//     return response()->json($assessment);
-// }
-
 public function getAssessment(Request $request, $id)
 {
     // Get filter values from the request
@@ -410,7 +321,7 @@ public function getAssessment(Request $request, $id)
                      $query->where("tblassmain_ai.subcode", $subcode)
                            ->where("tblassmain_ai.class_code", $classCode)
                            ->where("tblassmain_ai.term", $term)
-                           ->orWhereNull("tblassmain_ai.subcode"); // Ensure students with no exact match are included
+                           ->orWhereNull("tblassmain_ai.subcode"); 
                  });
         })
         ->leftJoin("tblclass", "tblstudent.current_class", "=", "tblclass.class_code")
@@ -427,7 +338,6 @@ public function getAssessment(Request $request, $id)
             DB::raw("COALESCE(tblassmain_ai.deleted, '0') AS deleted"),
             DB::raw('COALESCE(tblassmain_ai.transid, tblstudent.transid) as transid'),
 
-            // Ensure paper1, paper2, and total_score are 0 if there is no exact match in tblassmain_ai
             DB::raw("
                 CASE
                     WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
@@ -475,10 +385,10 @@ public function fetchAssessments(Request $request)
     $student_no = $request->input('student_no');
 
     $assessments = DB::table('tblassmain_ai')
-        ->join('tblsubject', 'tblassmain_ai.subcode', '=', 'tblsubject.subcode') // Only subjects with assessments
+        ->join('tblsubject', 'tblassmain_ai.subcode', '=', 'tblsubject.subcode')
         ->join('tblstudent', 'tblassmain_ai.student_no', '=', 'tblstudent.student_no')
         ->leftJoin('tblclass', 'tblclass.class_code', '=', DB::raw("'$class_code'"))
-        ->leftJoin('tblcomment_ia', 'tblassmain_ai.student_no', '=', 'tblcomment_ia.student_no') // Join comments table
+        ->leftJoin('tblcomment_ia', 'tblassmain_ai.student_no', '=', 'tblcomment_ia.student_no') 
         ->where('tblassmain_ai.class_code', $class_code)
         ->where('tblassmain_ai.term', $term)
         ->where('tblassmain_ai.student_no', $student_no)
@@ -492,7 +402,7 @@ public function fetchAssessments(Request $request)
             DB::raw('COALESCE(tblassmain_ai.total_score, 0) as total_score'),
             DB::raw('COALESCE(tblassmain_ai.grade, "N/A") as grade'),
             DB::raw('COALESCE(tblassmain_ai.t_remarks, "No Remarks") as t_remarks'),
-            DB::raw('COALESCE(tblcomment_ia.ct_remarks, "No Comment") as ct_remarks') // Selecting ct_remarks
+            DB::raw('COALESCE(tblcomment_ia.ct_remarks, "No Comment") as ct_remarks')
         )
         ->distinct()
         ->get();

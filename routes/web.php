@@ -197,7 +197,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-assessment/{id}', [NewAssessmentController::class, 'getAssessment'])-> name('newassessment.getAssessment');
     Route::post('/fetch-assessments', [NewAssessmentController::class, 'fetchAssessments'])->name('newassessment.fetchAssessments');
     Route::post('/newassessment/delete', [NewAssessmentController::class, 'destroy'])->name('newassessment.delete');
-
+    Route::get('/get-subjects-by-class', [NewAssessmentController::class, 'getSubjectsByClass'])->name('getSubjectsByClass');
 });
 
 Route::middleware(['auth'])->group(function () {
