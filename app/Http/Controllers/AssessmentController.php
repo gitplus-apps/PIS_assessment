@@ -19,7 +19,11 @@ class AssessmentController extends Controller{
     public function index(Request $request)
 {
     $staffNo = auth()->user()->staff_no; // Get logged-in staff number
-    $acyear = date("Y"); // Current academic year
+    $acyear = DB::table('tblacyear')
+        ->where('current_term', '1')
+        ->where('deleted', '0')
+        ->select('acyear_desc')
+        ->get(); // Current academic year
 
     $query = DB::table("tblassmain_ai as a")
         ->join("tblstudent as s", "a.student_no", "=", "s.student_no")
@@ -45,7 +49,7 @@ class AssessmentController extends Controller{
 
     $assessments = $query->get();
 
-    return view("modules.newassessment.index", compact("assessments"));
+    return view("modules.newassessment.index", compact("assessments", "acyear"));
 }
 
 
@@ -74,7 +78,7 @@ class AssessmentController extends Controller{
                 "tblassmain.pexam",
                 "tblassmain.total_test",
                 "tblassmain.total_exam",
-                "tblassmain.total_score",
+                "tblassmain.total_class_score",
                 "tblassmain.student_no",
                 "tblsubject.course_desc",
                 "tblprog.prog_desc"
@@ -118,6 +122,7 @@ public function staff(Request $request, $schoolCode)
         // Fetch staff number and school code
         $staffNo = $user->userid;
         $schoolCode = $user->school->school_code;
+        
 
         // Fetch courses assigned to the lecturer
         $newCourses = DB::table('tblsubject')
@@ -150,7 +155,7 @@ public function staff(Request $request, $schoolCode)
                 DB::raw("CONCAT(tblstudent.fname, ' ', tblstudent.mname, ' ', tblstudent.lname) AS student_name"),
                 DB::raw("COALESCE(tblassmain.total_test, 0) as pure_test"),
                 DB::raw("COALESCE(tblassmain.total_exam, 0) as pure_exam"),
-                DB::raw("COALESCE(tblassmain.total_score, 0) as total_score")
+                DB::raw("COALESCE(tblassmain.total_class_score, 0) as total_score")
             )
             ->whereIn("tblsubject.subcode", $newCourses)
             ->where("tblsubject.deleted", "0")
@@ -182,6 +187,24 @@ public function store(Request $request)
         ]);
     }
 
+    // Retrieve the academic year description
+    $acyear = DB::table('tblacyear')
+        ->where('current_term', '1')
+        ->where('deleted', '0')
+        ->select('acyear_desc')
+        ->first();
+
+    // If no academic year found
+    if (!$acyear) {
+        return response()->json([
+            "ok" => false,
+            "msg" => "Academic year not found.",
+        ]);
+    }
+
+    $acyear_desc = $acyear->acyear_desc; // Extract acyear_desc
+
+    // Retrieve student details
     $studentDetails = DB::table("tblstudent")
         ->where("deleted", "0")
         ->where("school_code", $request->school_code)
@@ -195,7 +218,7 @@ public function store(Request $request)
         ]);
     }
 
-    $totalScore = $request->paper1 + $request->paper2;
+    $totalclassScore = $request->paper1 + $request->paper2;
 
     try {
         $assessment = DB::table("tblassmain_ai")
@@ -211,10 +234,11 @@ public function store(Request $request)
                 ->update([
                     "paper1" => $request->paper1,
                     "paper2" => $request->paper2,
-                    "total_score" => $totalScore,
+                    "total_class_score" => $totalclassScore,
                     "deleted" => "0",
                     "modifyuser" => $request->createuser,
                     "modifydate" => now(),
+                    "acyear" => $acyear_desc, // Assign correct academic year
                 ]);
 
             return response()->json([
@@ -226,14 +250,14 @@ public function store(Request $request)
             DB::table("tblassmain_ai")->insert([
                 "transid" => $newTransId,
                 "school_code" => $request->school_code,
-                "acyear" => $studentDetails->admyear,
+                "acyear" => $acyear_desc, // Assign correct academic year
                 "term" => $request->term,
                 "student_no" => $request->student_no,
                 "subcode" => $request->subcode,
                 "class_code" => $request->class_code,
                 "paper1" => $request->paper1,
                 "paper2" => $request->paper2,
-                "total_score" => $totalScore,
+                "total_class_score" => $totalclassScore,
                 "t_remarks" => "", // Add remarks logic if needed
                 "deleted" => "0",
                 "createuser" => $request->createuser,
@@ -253,7 +277,6 @@ public function store(Request $request)
         ]);
     }
 }
-
 
 
     public function delete($code)
@@ -365,7 +388,7 @@ public function store(Request $request)
                         "subcode" => $request->course,
                         "total_exam" => $percentageExams,
                         "total_test" => $percentageClass,
-                        "total_score" => $totalScore,
+                        "total_class_score" => $totalScore,
                         "prog_code" => $studentDetails->prog,
                         "deleted" => "0",
                         "modifydate" => date("Y-m-d"),
