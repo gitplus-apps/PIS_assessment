@@ -33,14 +33,26 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="edit-ass-paper1">Paper 1</label>
+                        <label for="edit-ass-class_score">Class Score</label>
+                        <input type="number" id="edit-ass-class_score" name="class_score"
+                            class="form-control form-control-sm" required>
+                    </div> 
+
+                    <div class="form-group">
+                        <label for="edit-ass-paper1">SAT 1</label>
                         <input type="number" id="edit-ass-paper1" name="paper1"
                             class="form-control form-control-sm" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="edit-ass-paper2">Paper 2</label>
+                        <label for="edit-ass-paper2">SAT 2</label>
                         <input type="number" name="paper2" id="edit-ass-paper2"
+                            class="form-control form-control-sm" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-ass-exam">Exams</label>
+                        <input type="number" name="exam" id="edit-ass-exam"
                             class="form-control form-control-sm" required>
                     </div>
 
@@ -54,124 +66,3 @@
     </div>
 </div>
 
-<!-- <script>
-$(document).ready(function () {
-    let studentTable = $('#studentTable tbody');
-
-    function showNoDataMessage() {
-        studentTable.html(`
-            <tr>
-                <td colspan="5" class="text-center text-muted">No data available in table</td>
-            </tr>
-        `);
-    }
-
-    showNoDataMessage();
-
-    $('#filterForm').on('submit', function (e) {
-        e.preventDefault();
-        let classCode = $('#class_code').val();
-        let subcode = $('#subcode').val();
-        let term = $('#term').val();
-
-        $.ajax({
-            url: "{{ route('newassessment.filter') }}",
-            method: "GET",
-            data: { class_code: classCode, subcode: subcode, term: term },
-            success: function (response) {
-                studentTable.empty();
-                if (response.students.length > 0) {
-                    response.students.forEach(function (student) {
-                        studentTable.append(`
-                            <tr>
-                                <td>${student.student_no}</td>
-                                <td>${student.fname} ${student.lname}</td>
-                                <td>${student.current_class}</td>
-                                <td>${student.total_score}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary edit-assessment-btn" 
-                                            data-id="${student.transid}" 
-                                            data-student="${student.student_no}" 
-                                            data-paper1="${student.paper1}" 
-                                            data-paper2="${student.paper2}" 
-                                            data-subcode="${student.subcode}" 
-                                            data-class="${student.class_code}" 
-                                            data-term="${student.term}">
-                                        Edit
-                                    </button>
-                                </td>
-                            </tr>
-                        `);
-                    });
-                } else {
-                    showNoDataMessage();
-                }
-            },
-            error: function () {
-                showNoDataMessage();
-            }
-        });
-    });
-
-    $("#edit-student-assess-form-admin").submit(function (e) {
-        e.preventDefault();
-        let formData = $(this).serialize();
-
-        $.ajax({
-            url: "{{ route('newassessment.store') }}",
-            type: "POST",
-            data: formData,
-            dataType: "json",
-            success: function (response) {
-                if (response.ok) {
-                    alert(response.msg);
-                    $("#edit-assess-modal").modal("hide");
-                    location.reload();
-                } else {
-                    alert(response.msg);
-                }
-            },
-            error: function (xhr) {
-                console.log(xhr.responseText);
-                alert("An error occurred while processing the request.");
-            },
-        });
-    });
-
-    $(document).on("click", ".edit-assessment-btn", function () {
-        let assessmentId = $(this).data("id");
-
-        if (!assessmentId) {
-            alert("Assessment ID is missing!");
-            return;
-        }
-
-        $.ajax({
-            url: "{{ route('newassessment.getAssessment', '') }}/" + assessmentId,
-            type: "GET",
-            dataType: "json",
-            success: function (data) {
-                if (!data) {
-                    alert("Error: Assessment not found.");
-                    return;
-                }
-
-                $("#edit-ass-code").val(data.transid);
-                $("#edit-ass-student-id").val(data.student_no);
-                $("#edit-ass-student-display").val(data.student_name);
-                $("#edit-ass-course-id").val(data.class_code);
-                $("#edit-ass-course").val(data.course_name);
-                $("#edit-ass-paper1").val(data.paper1);
-                $("#edit-ass-paper2").val(data.paper2);
-                $("#edit-ass-term").val(data.term);
-                
-                $("#edit-assess-modal").modal("show");
-            },
-            error: function (xhr) {
-                console.log(xhr.responseText);
-                alert("Error fetching assessment details.");
-            },
-        });
-    });
-});
-</script> -->

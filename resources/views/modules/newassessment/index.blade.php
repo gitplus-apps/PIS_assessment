@@ -25,12 +25,22 @@
                 <!-- Filter Students Tab -->
                 <div class="tab-pane fade show active" id="filterStudents" role="tabpanel" aria-labelledby="filter-tab">
                     {{--<h4 class="mb-3 text-center text-primary">Students Assessment</h4>--}}
+
+                    
+
+                    
+                    <div class="d-flex justify-content-between align-items-center">
                     <div class="col-md-4">
                     <label for="searchStudent" class="form-label fw-bold">Search Student</label>
                     <input type="text" class="form-control" id="searchStudent"
                         placeholder="Enter student name or number">
-                </div>
-</br>
+                    </div>
+                        <a href="{{ route('newassessment.upload') }}" class="btn btn-primary">Upload Excel</a>
+                    </div>
+                    
+<br/>
+<br/>
+<br/>
 
                     <form id="filterForm" class="row g-3 align-items-end">
                         <div class="col-md-2">
@@ -59,16 +69,6 @@
                           </select>
                         </div>
 
-                        {{--<div class="col-md-4">
-                            <label for="subcode" class="form-label fw-bold">Subject</label>
-                            <select class="form-select select2" name="subcode" id="subcode">
-                                <option value="">--Select Subject--</option>
-                                @foreach ($subjects as $subject)
-                                    <option value="{{ $subject->subcode }}">{{ $subject->subname }}</option>
-                                @endforeach
-                            </select>
-                        </div>--}}
-
                         
 
                         <div class="col-md-2 text-center">
@@ -85,14 +85,18 @@
                                 <table class="table table-hover table-bordered mt-3" id="studentTable">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>Student No</th>
-                                            <th>Name</th>
-                                            <th>Class</th>
-                                            <th>Paper 1</th>
-                                            <th>Paper 2</th>
-                                            <th>Total Score</th>
-                                            <th>Grade</th>
-                                            <th>Action</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Student No</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Name</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Class</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Class Score</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">SAT 1</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">SAT 2</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Total class Score(30%)</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Exams</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Exams(70%)</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Total Grade</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Grade</th>
+                                            <th style="font-size: 14px; padding: 15px 10px;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -102,6 +106,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
 
 
@@ -151,114 +156,68 @@
                     <div class="container mt-4">
 
 
-                        <div id="printSection"
-                            style="border: 1px solid #ddd; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1); padding: 20px; width: 80%; margin: auto; font-family: Arial, sans-serif;">
-                            <h3 style="text-align: center; color: #007bff;">PIS – MODEL MONTESSORI SCHOOL</h3>
-                            <h5 style="text-align: center;">CAMBRIDGE ASSESSMENT INTERNATIONAL EDUCATION</h5>
-                            <h6 style="text-align: center; font-weight: 600;">
-                                2024/2025 ACADEMIC YEAR TERM 2
-                            </h6>
-                            <h4 style="text-align: center; margin-top: 20px;">ASSESSMENT REPORT</h4>
-                            <script>
-                                function adjustWidth(input) {
-                                    input.style.width = ((input.value.length + 2) * 8.05) + "px";
-                                }
-                            </script>
-                            <br><br>
-                            <div id="student_info" style="display: flex; justify-content: space-around;"></div>
-                            <br>
-                            
-                            <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
-                            <table class="table table-bordered table-striped text-center" id="assessmentTable">
-                            <thead class="table-dark">
-                            <tr>
-                               <th>Subjects</th>
-                               <th>Paper 1 (50%)</th>
-                               <th>Paper 2 (50%)</th>
-                               <th>Final Score (100%)</th>
-                               <th>Grade</th>
-                               <th>Remarks</th>
-                            </tr>
-                            </thead>
-                            <tbody id="assessmentData">
-                              <tr>
-                                <td colspan="6" class="text-muted">No data available</td>
-                              </tr>
-                            </tbody>
-                            </table>
-                        </br>
-                        {{--<h5 style="text-align: center;">GRADING SYSTEM</h5>
-                            <table
-                                style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #000;">
-                                <thead style="background-color: #333; color: #fff;">
-                                    <tr>
-                                        <th style="border: 1px solid #000; padding: 8px;">Marks (%)</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Grade</th>
-                                        <th style="border: 1px solid #000; padding: 8px;">Interpretation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">90 – 100</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">A*</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Excellent</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">80 – 89</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">A</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Excellent</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">70 – 79</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">B</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Very Good</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">60 – 69</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">C</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Good</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">50 – 59</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">D</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Credit</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">40 – 49</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">E</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Pass</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">30 – 39</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">F</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Fail</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">-</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">U</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">Ungraded</td>
-                                    </tr>
-                                </tbody>
-                            </table>--}}
-                            <div style="margin-top: 20px;">
-                                <h5>Class Teacher's Comments:</h5>
-                                <div id="comment"></div> 
-                            </div>
-                        </br>
-                        </br>
-                            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
-                                <div>
-                                    <p><strong>Sign:</strong> ____________________</p>
-                                    <p>Academic Coordinator</p>
-                                </div>
-                                <div>
-                                    <p><strong>Sign:</strong> ____________________</p>
-                                    <p>Class Teacher</p>
-                                </div>
-                            </div>
-                            <p><strong>Resumption Date:</strong> 1/11/2024</p>
-                            <p><strong>Midterm Date:</strong> 6/11/2024</p>
-                        </div>
+                    <div id="printSection" style="border: 1px solid #ddd; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1); padding: 20px; width: 90%; margin: auto; font-family: Arial, sans-serif;">
+    <h3 style="text-align: center; color: #007bff;">PIS – MODEL MONTESSORI SCHOOL</h3>
+    <h5 style="text-align: center;">CAMBRIDGE ASSESSMENT INTERNATIONAL EDUCATION</h5>
+    <h6 style="text-align: center; font-weight: 600;">2024/2025 ACADEMIC YEAR TERM 2</h6>
+    <h4 style="text-align: center; margin-top: 20px;">ASSESSMENT REPORT</h4>
+    
+    <script>
+        function adjustWidth(input) {
+            input.style.width = ((input.value.length + 2) * 8.05) + "px";
+        }
+    </script>
+    
+    <br><br>
+    <div id="student_info" style="display: flex; justify-content: space-around;"></div>
+    <br>
+    
+    <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
+    <table style="width: 100%; border-collapse: collapse; text-align: center; margin-top: 20px;">
+        <thead style="background-color: #343a40; color: #fff;">
+            <tr>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Subjects</th>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Class Score</th>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">SAT 1</th>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">SAT 2</th>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Total Class Score(30%)</th>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Exams</th>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Exams(70%)</th>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Total Grade(100%)</th>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Grade</th>
+                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Remarks</th>
+            </tr>
+        </thead>
+        <tbody id="assessmentData">
+            <tr>
+                <td colspan="10" style="padding: 10px; border: 1px solid #ddd; color: #6c757d;">No data available</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <br>
+    <div style="margin-top: 20px;">
+        <h5>Class Teacher's Comments:</h5>
+        <div id="comment"></div> 
+    </div>
+    
+    <br>
+    <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+        <div>
+            <p><strong>Sign:</strong> ____________________</p>
+            <p>Academic Coordinator</p>
+        </div>
+        <div>
+            <p><strong>Sign:</strong> ____________________</p>
+            <p>Class Teacher</p>
+        </div>
+    </div>
+    
+    <p><strong>Resumption Date:</strong> 1/11/2024</p>
+    <p><strong>Midterm Date:</strong> 6/11/2024</p>
+</div>
+
+
 
                         <div class="mt-3 text-center">
                             <button class="btn btn-success" onclick="printReport()"><i class="fas fa-print"></i>
@@ -351,67 +310,6 @@
         </script>
 <script>
 
-// function fetchAssessments() {
-//     let class_code = document.getElementById('report_class_code')?.value.trim();
-//     let term = document.getElementById('report_term')?.value.trim();
-//     let student_no = document.getElementById('student_no')?.value.trim();
-//     let subject_type = document.getElementById('subject_type')?.value.trim();
-//     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-//     console.log("Captured values:", { class_code, term, student_no, subject_type });
-
-//     fetch('{{ route('newassessment.fetchAssessments') }}', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRF-TOKEN': csrfToken
-//         },
-//         body: JSON.stringify({
-//             class_code,
-//             term,
-//             student_no,
-//             subject_type
-//         })
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         console.log({ 'current_d': data });
-
-//         let studentInfo = document.getElementById('student_info');
-//         let comment = document.getElementById('comment');
-//         let tbody = document.getElementById('assessmentData');
-
-//         // Clear previous content
-//         studentInfo.innerHTML = '';
-//         comment.innerHTML = '';
-//         tbody.innerHTML = '';
-
-//         if (data.length > 0) {
-//             studentInfo.innerHTML = `
-//                 <p><strong>Student Name:</strong> ${data[0].student_name}</p>
-//                 <p><strong>Class:</strong> ${data[0].class_name}</p>
-//             `;              
-//             comment.innerHTML = `<h6>${data[0].ct_remarks}</h6>`;
-
-//             data.forEach(assess => {
-//                 tbody.innerHTML += `<tr>
-//                     <td>${assess.subname}</td>
-//                     <td>${assess.paper1 ?? 'N/A'}</td>
-//                     <td>${assess.paper2 ?? 'N/A'}</td>
-//                     <td>${assess.total_score ?? 'N/A'}</td>
-//                     <td>${assess.grade}</td>
-//                     <td>${assess.t_remarks}</td>
-//                 </tr>`;
-//             });
-//         } else {
-//             showNoDataMessage();
-//         }
-//     })
-//     .catch(error => {
-//         console.error("Error fetching assessments:", error);
-//         showNoDataMessage();
-//     });
-// }
 
 function fetchAssessments() {
     let class_code = document.getElementById('report_class_code')?.value.trim();
@@ -457,12 +355,16 @@ function fetchAssessments() {
             // Populate assessment data
             data.forEach(assess => {
                 tbody.innerHTML += `<tr>
-                    <td>${assess.subname}</td>
-                    <td>${assess.paper1 ?? 'N/A'}</td>
-                    <td>${assess.paper2 ?? 'N/A'}</td>
-                    <td>${assess.total_score ?? 'N/A'}</td>
-                    <td>${assess.grade}</td>
-                    <td>${assess.t_remarks}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.subname}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.class_score}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.paper1 ?? 'N/A'}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.paper2 ?? 'N/A'}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.total_score ?? 'N/A'}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.exams}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.exams70}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.total_grade}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.grade}</td>
+                    <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.t_remarks}</td>
                 </tr>`;
             });
         } else {
@@ -550,7 +452,7 @@ function fetchAssessments() {
                 function showNoDataMessage() {
                     studentTable.html(`
             <tr>
-                <td colspan="8" class="text-center text-muted">No data available in table</td>
+                <td colspan="12" class="text-center text-muted">No data available in table</td>
             </tr>
         `);
                 }
@@ -576,14 +478,18 @@ function fetchAssessments() {
                                 response.students.sort().forEach(function(student) {
                                     studentTable.append(`
                             <tr>
-                                <td>${student.student_no}</td>
-                                <td>${student.fname} ${student.mname} ${student.lname}</td>
-                                <td>${student.current_class}</td>
-                                <td>${student.paper1}</td>
-                                <td>${student.paper2}</td>
-                                <td>${student.total_score}</td>
-                                <td>${student.grade}</td>
-                                <td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.student_no}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.fname} ${student.mname} ${student.lname}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.current_class}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.class_score}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.paper1}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.paper2}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.total_score}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.exams}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.exams70}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.total_grade}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.grade}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">
                                     <button class="btn btn-sm btn-primary edit-assessment-btn"
                                             data-id="${student.transid}"
                                             data-student="${student.student_no}"
@@ -720,6 +626,8 @@ function fetchAssessments() {
         $("#edit-ass-paper1").val(data.paper1);
         $("#edit-ass-paper2").val(data.paper2);
         $("#edit-ass-term").val(data.term);
+        $("#edit-ass-class_score").val(data.class_score);
+        $("#edit-ass-exam").val(data.exams)
 
         $("#edit-assess-modal").modal("show");
     },
@@ -768,3 +676,9 @@ function fetchAssessments() {
             });
         </script>
     @endsection
+
+
+
+
+
+    

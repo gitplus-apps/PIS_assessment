@@ -26,8 +26,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NewAssessmentController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\AssessmentUploadController;
 use Dom\Comment;
 use Livewire\Livewire;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -198,6 +200,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/fetch-assessments', [NewAssessmentController::class, 'fetchAssessments'])->name('newassessment.fetchAssessments');
     Route::post('/newassessment/delete', [NewAssessmentController::class, 'destroy'])->name('newassessment.delete');
     Route::get('/get-subjects-by-class', [NewAssessmentController::class, 'getSubjectsByClass'])->name('getSubjectsByClass');
+
+    Route::get('/assessment/upload', [AssessmentUploadController::class, 'showUploadForm'])->name('newassessment.upload');
+Route::post('/assessment/upload/process', [AssessmentUploadController::class, 'processUpload'])->name('newassessment.upload.process');
 });
 
 Route::middleware(['auth'])->group(function () {
