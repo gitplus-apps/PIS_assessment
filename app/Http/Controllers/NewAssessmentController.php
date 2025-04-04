@@ -240,7 +240,7 @@ public function store(Request $request)
                 "class_code" => $request->class_code,
                 "paper1" => $request->paper1,
                 "paper2" => $request->paper2,
-                "total_class_score" => $$totalClassScore,
+                "total_class_score" => $totalClassScore,
                 "exam" => $request->exam,
                 "exam70" => $exam70,
                 "total_grade" => $totalGrade,
