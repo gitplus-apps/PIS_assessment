@@ -166,11 +166,17 @@ class NewAssessmentController extends Controller
             ]);
         }
 
+        // (($sat1 + $sat2 + $request->class_score) / 220) * 30;
         $sat1 = $request->sat1_paper1 + $request->sat1_paper2;
         $sat2 = $request->sat2_paper1 + $request->sat2_paper2;
-        $totalClassScore = (($sat1 + $sat2 + $request->class_score) / 220) * 30;
-        $totalClassScore = round($totalClassScore);
-        $exam70 = $request->exam * 0.7;
+        $subCodePrefix = substr($request->subcode, 0, 5);
+        $specialSubjects = ['HISTY', 'GEOGY', 'SPANY', 'MUSIY', 'FRENY', 'ARTCY'];
+        $totalClassScore = $subCodePrefix == 'MATHY'
+            ? round(((round($sat1) + round($sat2) + round($request->class_score)) / 220) * 30)
+            : (in_array($subCodePrefix, $specialSubjects)
+                ? round(((round($sat2) + round($request->class_score)) / 200) * 30)
+                : round(((round($sat1) + round($sat2) + round($request->class_score)) / 300) * 30));
+        $exam70 = round($request->exam * 0.7);
         $totalGrade = $totalClassScore + $exam70;
         $totalGrade = round($totalGrade);
 
