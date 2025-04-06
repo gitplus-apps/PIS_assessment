@@ -6,7 +6,7 @@
     <div class="container mt-4">
         <div class="">
             <ul class="nav nav-tabs" id="assessmentTabs" role="tablist">
-            <li class="nav-item" role="presentation">
+                <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="filter-tab2" data-bs-toggle="tab" data-bs-target="#filterStudents2"
                         type="button" role="tab" aria-controls="filterStudents2" aria-selected="true">
                         <i class="fas fa-filter"></i> SAT1 Assessment
@@ -32,380 +32,402 @@
                 </li>
             </ul>
         </div>
-</br>
+        </br>
 
-            <div class="tab-content mt-3" id="assessmentTabsContent">
+        <div class="tab-content mt-3" id="assessmentTabsContent">
 
 
-                <!-- SAT1 Assessment -->
+            <!-- SAT1 Assessment -->
             <div class="tab-pane fade show active" id="filterStudents2" role="tabpanel" aria-labelledby="filter-tab2">
-                    {{--<h4 class="mb-3 text-center text-primary">Students Assessment</h4>--}}
+                {{-- <h4 class="mb-3 text-center text-primary">Students Assessment</h4> --}}
 
-                    <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center">
                     <div class="col-md-4">
-                    <label for="searchStudent2" class="form-label fw-bold">Search Student</label>
-                    <input type="text" class="form-control" id="searchStudent2"
-                        placeholder="Enter student name or number">
+                        <label for="searchStudent2" class="form-label fw-bold">Search Student</label>
+                        <input type="text" class="form-control" id="searchStudent2"
+                            placeholder="Enter student name or number">
                     </div>
-                        <a href="{{ route('newassessment.upload') }}" class="btn btn-primary">Upload Excel</a>
-                    </div>
-                    
-<br/>
-<br/>
-<br/>
-
-                    <form id="filterForm2" class="row g-3 align-items-end">
-                        <div class="col-md-2">
-                            <label for="term" class="form-label fw-bold">Term</label>
-                            <select class="form-select select2" name="term" id="term2">
-                            <option value="">--Select Term--</option>
-                                <option value="1">Term 1</option>
-                                <option value="2">Term 2</option>
-                                <option value="3">Term 3</option>
-                                <option value="4">Term 4</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="class_code" class="form-label fw-bold">Class</label>
-                            <select class="form-select select2" name="class_code" id="class_code2">
-                                <option value="">--Select Class--</option>
-                                @foreach ($classes as $class)
-                                    <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                         <label for="subcode" class="form-label fw-bold">Subject</label>
-                          <select class="form-control select2" id="subcode2" name="subcode">
-                            <option value="">Select Subject</option>
-                          </select>
-                        </div>
-
-                        
-
-                        <div class="col-md-2 text-center">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter"></i> Apply Filter
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="card shadow-lg mt-4">
-                        <div class="card-body">
-                            <h5 class="card-title text-center text-secondary">SAT1 Assessment</h5>
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered mt-3" id="studentTable2">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Student No</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Name</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Class</th>
-                                            {{--<th style="font-size: 14px; padding: 15px 10px;">Class Score</th>--}}
-                                            <th style="font-size: 14px; padding: 15px 10px;">Paper 1</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Saper 2</th>
-                                            {{--<th style="font-size: 14px; padding: 15px 10px;">Total class Score(30%)</th>--}}
-                                            {{--<th style="font-size: 14px; padding: 15px 10px;">Exams</th>--}}
-                                            {{--<th style="font-size: 14px; padding: 15px 10px;">Exams(70%)</th>--}}
-                                            <th style="font-size: 14px; padding: 15px 10px;">Total</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Grade</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Filtered students will be displayed here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
+                    <a href="{{ route('newassessment.upload') }}" class="btn btn-primary">Upload Excel</a>
                 </div>
 
+                <br />
+                <br />
+                <br />
 
-                 <!-- SAT2 Assessment -->
-                <div class="tab-pane fade show" id="filterStudents3" role="tabpanel" aria-labelledby="filter-tab3">
-                    {{--<h4 class="mb-3 text-center text-primary">Students Assessment</h4>--}}
-
-                    <div class="d-flex justify-content-between align-items-center">
-                    <div class="col-md-4">
-                    <label for="searchStudent3" class="form-label fw-bold">Search Student</label>
-                    <input type="text" class="form-control" id="searchStudent3"
-                        placeholder="Enter student name or number">
-                    </div>
-                        <a href="{{ route('newassessment.upload') }}" class="btn btn-primary">Upload Excel</a>
-                    </div>
-                    
-<br/>
-<br/>
-<br/>
-
-                    <form id="filterForm3" class="row g-3 align-items-end">
-                        <div class="col-md-2">
-                            <label for="term" class="form-label fw-bold">Term</label>
-                            <select class="form-select select2" name="term" id="term3">
+                <form id="filterForm2" class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <label for="term" class="form-label fw-bold">Term</label>
+                        <select class="form-select select2" name="term" id="term2">
                             <option value="">--Select Term--</option>
-                                <option value="1">Term 1</option>
-                                <option value="2">Term 2</option>
-                                <option value="3">Term 3</option>
-                                <option value="4">Term 4</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="class_code" class="form-label fw-bold">Class</label>
-                            <select class="form-select select2" name="class_code" id="class_code3">
-                                <option value="">--Select Class--</option>
-                                @foreach ($classes as $class)
-                                    <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                         <label for="subcode" class="form-label fw-bold">Subject</label>
-                          <select class="form-control select2" id="subcode3" name="subcode">
-                            <option value="">Select Subject</option>
-                          </select>
-                        </div>
-
-                        
-
-                        <div class="col-md-2 text-center">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter"></i> Apply Filter
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="card shadow-lg mt-4">
-                        <div class="card-body">
-                            <h5 class="card-title text-center text-secondary">SAT2 Assessment</h5>
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered mt-3" id="studentTable3">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Student No</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Name</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Class</th>
-                                            {{--<th style="font-size: 14px; padding: 15px 10px;">Class Score</th>--}}
-                                            <th style="font-size: 14px; padding: 15px 10px;">Paper 1</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Saper 2</th>
-                                            {{--<th style="font-size: 14px; padding: 15px 10px;">Total class Score(30%)</th>--}}
-                                            {{--<th style="font-size: 14px; padding: 15px 10px;">Exams</th>--}}
-                                            {{--<th style="font-size: 14px; padding: 15px 10px;">Exams(70%)</th>--}}
-                                            <th style="font-size: 14px; padding: 15px 10px;">Total</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Grade</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Filtered students will be displayed here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                            <option value="1">Term 1</option>
+                            <option value="2">Term 2</option>
+                            <option value="3">Term 3</option>
+                            <option value="4">Term 4</option>
+                        </select>
                     </div>
-
-                </div>
-
-
-                <!-- End Of term tab-->
-                <div class="tab-pane fade" id="filterStudents" role="tabpanel" aria-labelledby="filter-tab">
-                    {{--<h4 class="mb-3 text-center text-primary">Students Assessment</h4>--}}
-
-                    <div class="d-flex justify-content-between align-items-center">
                     <div class="col-md-4">
-                    <label for="searchStudent" class="form-label fw-bold">Search Student</label>
-                    <input type="text" class="form-control" id="searchStudent"
-                        placeholder="Enter student name or number">
+                        <label for="class_code" class="form-label fw-bold">Class</label>
+                        <select class="form-select select2" name="class_code" id="class_code2">
+                            <option value="">--Select Class--</option>
+                            @foreach ($classes as $class)
+                                <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                        <a href="{{ route('newassessment.upload') }}" class="btn btn-primary">Upload Excel</a>
-                    </div>
-                    
-<br/>
-<br/>
-<br/>
-
-                    <form id="filterForm" class="row g-3 align-items-end">
-                        <div class="col-md-2">
-                            <label for="term" class="form-label fw-bold">Term</label>
-                            <select class="form-select select2" name="term" id="term">
-                            <option value="">--Select Term--</option>
-                                <option value="1">Term 1</option>
-                                <option value="2">Term 2</option>
-                                <option value="3">Term 3</option>
-                                <option value="4">Term 4</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="class_code" class="form-label fw-bold">Class</label>
-                            <select class="form-select select2" name="class_code" id="class_code">
-                                <option value="">--Select Class--</option>
-                                @foreach ($classes as $class)
-                                    <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                         <label for="subcode" class="form-label fw-bold">Subject</label>
-                          <select class="form-control select2" id="subcode" name="subcode">
+                    <div class="col-md-4">
+                        <label for="subcode" class="form-label fw-bold">Subject</label>
+                        <select class="form-control select2" id="subcode2" name="subcode">
                             <option value="">Select Subject</option>
-                          </select>
-                        </div>
-
-                        
-
-                        <div class="col-md-2 text-center">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter"></i> Apply Filter
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="card shadow-lg mt-4">
-                        <div class="card-body">
-                            <h5 class="card-title text-center text-secondary">Student List</h5>
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered mt-3" id="studentTable">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Student No</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Name</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Class</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Class Score</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">SAT 1</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">SAT 2</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Total class Score(30%)</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Exams</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Exams(70%)</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Total Grade</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Grade</th>
-                                            <th style="font-size: 14px; padding: 15px 10px;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Filtered students will be displayed here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        </select>
                     </div>
 
-                </div>
 
 
+                    <div class="col-md-2 text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Apply Filter
+                        </button>
+                    </div>
+                </form>
 
-
-                <!-- Report Tab -->
-                <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
-                    <form id="filterForm" class="row g-3 align-items-end">
-                            <div class="col-md-3">
-                                <label for="class_code">Class</label>
-                                <select class="form-control select2" id="report_class_code" name="class_code">
-                                    <option value="">Select Class</option>
-                                    @foreach ($classes as $class)
-                                        <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="term">Term</label>
-                                <select class="form-control select2" id="report_term" name="term">
-                                    <option value="">Select Term</option>
-                                    <option value="1">Term 1</option>
-                                    <option value="2">Term 2</option>
-                                    <option value="3">Term 3</option>
-                                    <option value="4">Term 4</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="student_no">Student</label>
-                                <select class="form-control select2" id="student_no" name="student_no">
-                                    <option value="">Select Student</option>
-                                    @foreach ($students as $student)
-                                        <option value="{{ $student->student_no }}">
-                                            {{ $student->student_no }}-{{ $student->fname }} {{ $student->mname }}
-                                            {{ $student->lname }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                            <button type="button" class="btn btn-primary mt-3" onclick="fetchAssessments()"><i
-                                class="fas fa-filter"></i> Filter
-                            </button>
-                            </div>
-                        
-                    </form>
-
-                    <div class="container mt-4">
-
-
-                    <div id="printSection" style="border: 1px solid #ddd; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1); padding: 20px; width: 90%; margin: auto; font-family: Arial, sans-serif;">
-    <h3 style="text-align: center; color: #007bff;">PIS – MODEL MONTESSORI SCHOOL</h3>
-    <h5 style="text-align: center;">CAMBRIDGE ASSESSMENT INTERNATIONAL EDUCATION</h5>
-    <h6 style="text-align: center; font-weight: 600;">2024/2025 ACADEMIC YEAR TERM 2</h6>
-    <h4 style="text-align: center; margin-top: 20px;">ASSESSMENT REPORT</h4>
-    
-    <br><br>
-    <div id="student_info" style="display: flex; justify-content: space-around;"></div>
-    <br>
-    
-    <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
-    <table style="width: 100%; border-collapse: collapse; text-align: center; margin-top: 20px;">
-        <thead style="background-color: #343a40; color: #fff;">
-            <tr>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Subjects</th>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Class Score</th>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">SAT 1</th>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">SAT 2</th>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Total Class Score(30%)</th>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Exams</th>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Exams(70%)</th>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Total Grade(100%)</th>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Grade</th>
-                <th style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">Remarks</th>
-            </tr>
-        </thead>
-        <tbody id="assessmentData">
-            <tr>
-                <td colspan="10" style="padding: 10px; border: 1px solid #ddd; color: #6c757d;">No data available</td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <br>
-    <div style="margin-top: 20px;">
-        <h5>Class Teacher's Comments:</h5>
-        <div id="comment"></div> 
-    </div>
-    
-    <br>
-    <div style="margin-top: 20px; display: flex; justify-content: space-between;">
-        <div>
-            <p><strong>Sign:</strong> ____________________</p>
-            <p>Academic Coordinator</p>
-        </div>
-        <div>
-            <p><strong>Sign:</strong> ____________________</p>
-            <p>Class Teacher</p>
-        </div>
-    </div>
-    
-    <p><strong>Resumption Date:</strong> 1/11/2024</p>
-    <p><strong>Midterm Date:</strong> 6/11/2024</p>
-</div>
-
-
-
-                        <div class="mt-3 text-center">
-                            <button class="btn btn-success" onclick="printReport()"><i class="fas fa-print"></i>
-                                Print</button>
-                            <button class="btn btn-danger" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i>
-                                Download
-                                PDF</button>
+                <div class="card shadow-lg mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-center text-secondary">SAT1 Assessment</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered mt-3" id="studentTable2">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Student No</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Name</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Class</th>
+                                        {{-- <th style="font-size: 14px; padding: 15px 10px;">Class Score</th> --}}
+                                        <th style="font-size: 14px; padding: 15px 10px;">Paper 1</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Paper 2</th>
+                                        {{-- <th style="font-size: 14px; padding: 15px 10px;">Total class Score(30%)</th> --}}
+                                        {{-- <th style="font-size: 14px; padding: 15px 10px;">Exams</th> --}}
+                                        {{-- <th style="font-size: 14px; padding: 15px 10px;">Exams(70%)</th> --}}
+                                        <th style="font-size: 14px; padding: 15px 10px;">Total</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Grade</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filtered students will be displayed here -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
             </div>
+
+
+            <!-- SAT2 Assessment -->
+            <div class="tab-pane fade show" id="filterStudents3" role="tabpanel" aria-labelledby="filter-tab3">
+                {{-- <h4 class="mb-3 text-center text-primary">Students Assessment</h4> --}}
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="col-md-4">
+                        <label for="searchStudent3" class="form-label fw-bold">Search Student</label>
+                        <input type="text" class="form-control" id="searchStudent3"
+                            placeholder="Enter student name or number">
+                    </div>
+                    <a href="{{ route('newassessment.upload') }}" class="btn btn-primary">Upload Excel</a>
+                </div>
+
+                <br />
+                <br />
+                <br />
+
+                <form id="filterForm3" class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <label for="term" class="form-label fw-bold">Term</label>
+                        <select class="form-select select2" name="term" id="term3">
+                            <option value="">--Select Term--</option>
+                            <option value="1">Term 1</option>
+                            <option value="2">Term 2</option>
+                            <option value="3">Term 3</option>
+                            <option value="4">Term 4</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="class_code" class="form-label fw-bold">Class</label>
+                        <select class="form-select select2" name="class_code" id="class_code3">
+                            <option value="">--Select Class--</option>
+                            @foreach ($classes as $class)
+                                <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="subcode" class="form-label fw-bold">Subject</label>
+                        <select class="form-control select2" id="subcode3" name="subcode">
+                            <option value="">Select Subject</option>
+                        </select>
+                    </div>
+
+
+
+                    <div class="col-md-2 text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Apply Filter
+                        </button>
+                    </div>
+                </form>
+
+                <div class="card shadow-lg mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-center text-secondary">SAT2 Assessment</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered mt-3" id="studentTable3">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Student No</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Name</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Class</th>
+                                        {{-- <th style="font-size: 14px; padding: 15px 10px;">Class Score</th> --}}
+                                        <th style="font-size: 14px; padding: 15px 10px;">Paper 1</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Paper 2</th>
+                                        {{-- <th style="font-size: 14px; padding: 15px 10px;">Total class Score(30%)</th> --}}
+                                        {{-- <th style="font-size: 14px; padding: 15px 10px;">Exams</th> --}}
+                                        {{-- <th style="font-size: 14px; padding: 15px 10px;">Exams(70%)</th> --}}
+                                        <th style="font-size: 14px; padding: 15px 10px;">Total</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Grade</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filtered students will be displayed here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- End Of term tab-->
+            <div class="tab-pane fade" id="filterStudents" role="tabpanel" aria-labelledby="filter-tab">
+                {{-- <h4 class="mb-3 text-center text-primary">Students Assessment</h4> --}}
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="col-md-4">
+                        <label for="searchStudent" class="form-label fw-bold">Search Student</label>
+                        <input type="text" class="form-control" id="searchStudent"
+                            placeholder="Enter student name or number">
+                    </div>
+                    <a href="{{ route('newassessment.upload') }}" class="btn btn-primary">Upload Excel</a>
+                </div>
+
+                <br />
+                <br />
+                <br />
+
+                <form id="filterForm" class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <label for="term" class="form-label fw-bold">Term</label>
+                        <select class="form-select select2" name="term" id="term">
+                            <option value="">--Select Term--</option>
+                            <option value="1">Term 1</option>
+                            <option value="2">Term 2</option>
+                            <option value="3">Term 3</option>
+                            <option value="4">Term 4</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="class_code" class="form-label fw-bold">Class</label>
+                        <select class="form-select select2" name="class_code" id="class_code">
+                            <option value="">--Select Class--</option>
+                            @foreach ($classes as $class)
+                                <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="subcode" class="form-label fw-bold">Subject</label>
+                        <select class="form-control select2" id="subcode" name="subcode">
+                            <option value="">Select Subject</option>
+                        </select>
+                    </div>
+
+
+
+                    <div class="col-md-2 text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Apply Filter
+                        </button>
+                    </div>
+                </form>
+
+                <div class="card shadow-lg mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-center text-secondary">Student List</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered mt-3" id="studentTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Student No</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Name</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Class</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Class Score</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">SAT 1</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">SAT 2</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Total class Score(30%)</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Exams</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Exams(70%)</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Total Grade</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Grade</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filtered students will be displayed here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+            <!-- Report Tab -->
+            <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
+                <form id="filterForm" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label for="class_code">Class</label>
+                        <select class="form-control select2" id="report_class_code" name="class_code">
+                            <option value="">Select Class</option>
+                            @foreach ($classes as $class)
+                                <option value="{{ $class->class_code }}">{{ $class->class_desc }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="term">Term</label>
+                        <select class="form-control select2" id="report_term" name="term">
+                            <option value="">Select Term</option>
+                            <option value="1">Term 1</option>
+                            <option value="2">Term 2</option>
+                            <option value="3">Term 3</option>
+                            <option value="4">Term 4</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="student_no">Student</label>
+                        <select class="form-control select2" id="student_no" name="student_no">
+                            <option value="">Select Student</option>
+                            @foreach ($students as $student)
+                                <option value="{{ $student->student_no }}">
+                                    {{ $student->student_no }}-{{ $student->fname }} {{ $student->mname }}
+                                    {{ $student->lname }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-primary mt-3" onclick="fetchAssessments()"><i
+                                class="fas fa-filter"></i> Filter
+                        </button>
+                    </div>
+
+                </form>
+
+                <div class="container mt-4">
+
+
+                    <div id="printSection"
+                        style="border: 1px solid #ddd; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1); padding: 20px; width: 90%; margin: auto; font-family: Arial, sans-serif;">
+                        <h3 style="text-align: center; color: #007bff;">PIS – MODEL MONTESSORI SCHOOL</h3>
+                        <h5 style="text-align: center;">CAMBRIDGE ASSESSMENT INTERNATIONAL EDUCATION</h5>
+                        <h6 style="text-align: center; font-weight: 600;">2024/2025 ACADEMIC YEAR TERM 2</h6>
+                        <h4 style="text-align: center; margin-top: 20px;">ASSESSMENT REPORT</h4>
+
+                        <br><br>
+                        <div id="student_info" style="display: flex; justify-content: space-around;"></div>
+                        <br>
+
+                        <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
+                        <table style="width: 100%; border-collapse: collapse; text-align: center; margin-top: 20px;">
+                            <thead style="background-color: #343a40; color: #fff;">
+                                <tr>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        Subjects</th>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        Class Score</th>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        SAT 1</th>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        SAT 2</th>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        Total Class Score(30%)</th>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        Exams</th>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        Exams(70%)</th>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        Total Grade(100%)</th>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        Grade</th>
+                                    <th
+                                        style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
+                                        Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assessmentData">
+                                <tr>
+                                    <td colspan="10" style="padding: 10px; border: 1px solid #ddd; color: #6c757d;">No
+                                        data available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <br>
+                        <div style="margin-top: 20px;">
+                            <h5>Class Teacher's Comments:</h5>
+                            <div id="comment"></div>
+                        </div>
+
+                        <br>
+                        <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                            <div>
+                                <p><strong>Sign:</strong> ____________________</p>
+                                <p>Academic Coordinator</p>
+                            </div>
+                            <div>
+                                <p><strong>Sign:</strong> ____________________</p>
+                                <p>Class Teacher</p>
+                            </div>
+                        </div>
+
+                        <p><strong>Resumption Date:</strong> 1/11/2024</p>
+                        <p><strong>Midterm Date:</strong> 6/11/2024</p>
+                    </div>
+
+
+
+                    <div class="mt-3 text-center">
+                        <button class="btn btn-success" onclick="printReport()"><i class="fas fa-print"></i>
+                            Print</button>
+                        <button class="btn btn-danger" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i>
+                            Download
+                            PDF</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 
         <!-- Bootstrap JavaScript (Make sure you include this in your layout if not already added) -->
 
@@ -486,52 +508,58 @@
                 }).catch(error => console.error("Error generating PDF:", error));
             }
         </script>
-<script>
+        <script>
+            function fetchAssessments() {
+                let class_code = document.getElementById('report_class_code')?.value.trim();
+                let term = document.getElementById('report_term')?.value.trim();
+                let student_no = document.getElementById('student_no')?.value.trim();
+                let subject_type = document.getElementById('subject_type')?.value.trim();
+                let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-function fetchAssessments() {
-    let class_code = document.getElementById('report_class_code')?.value.trim();
-    let term = document.getElementById('report_term')?.value.trim();
-    let student_no = document.getElementById('student_no')?.value.trim();
-    let subject_type = document.getElementById('subject_type')?.value.trim();
-    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                console.log("Captured values:", {
+                    class_code,
+                    term,
+                    student_no,
+                    subject_type
+                });
 
-    console.log("Captured values:", { class_code, term, student_no, subject_type });
+                fetch('{{ route('newassessment.fetchAssessments') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            class_code,
+                            term,
+                            student_no,
+                            subject_type
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log({
+                            'current_d': data
+                        });
 
-    fetch('{{ route('newassessment.fetchAssessments') }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({
-            class_code,
-            term,
-            student_no,
-            subject_type
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log({ 'current_d': data });
+                        let studentInfo = document.getElementById('student_info');
+                        let comment = document.getElementById('comment');
+                        let tbody = document.getElementById('assessmentData');
 
-        let studentInfo = document.getElementById('student_info');
-        let comment = document.getElementById('comment');
-        let tbody = document.getElementById('assessmentData');
+                        // Clear previous table data
+                        tbody.innerHTML = '';
 
-        // Clear previous table data
-        tbody.innerHTML = '';
-
-        if (data.length > 0) {
-            // Display student details
-            studentInfo.innerHTML = `
+                        if (data.length > 0) {
+                            // Display student details
+                            studentInfo.innerHTML = `
                 <p><strong>Student Name:</strong> ${data[0].student_name}</p>
                 <p><strong>Class:</strong> ${data[0].class_name}</p>
-            `;              
-            comment.innerHTML = `<h6>${data[0].ct_remarks}</h6>`;
+            `;
+                            comment.innerHTML = `<h6>${data[0].ct_remarks}</h6>`;
 
-            // Populate assessment data
-            data.forEach(assess => {
-                tbody.innerHTML += `<tr>
+                            // Populate assessment data
+                            data.forEach(assess => {
+                                tbody.innerHTML += `<tr>
                     <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.subname}</td>
                     <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.class_score}</td>
                     <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.sat1 ?? 'N/A'}</td>
@@ -543,24 +571,23 @@ function fetchAssessments() {
                     <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.grade}</td>
                     <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.t_remarks}</td>
                 </tr>`;
-            });
-        } else {
-            // Ensure student info is displayed even when no assessment data exists
-            studentInfo.innerHTML = `
+                            });
+                        } else {
+                            // Ensure student info is displayed even when no assessment data exists
+                            studentInfo.innerHTML = `
                 <p><strong>Student Name:</strong> ${document.getElementById('report_student_name')?.value || 'N/A'}</p>
                 <p><strong>Class:</strong> ${document.getElementById('report_class_name')?.value || 'N/A'}</p>
             `;
-            comment.innerHTML = `<h6>No comments available</h6>`;
-            showNoDataMessage();
-        }
-    })
-    .catch(error => {
-        console.error("Error fetching assessments:", error);
-        showNoDataMessage();
-    });
-}
-
-</script>
+                            comment.innerHTML = `<h6>No comments available</h6>`;
+                            showNoDataMessage();
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching assessments:", error);
+                        showNoDataMessage();
+                    });
+            }
+        </script>
 
         <script>
             $(document).ready(function() {
@@ -589,7 +616,8 @@ function fetchAssessments() {
                         let studentNumber2 = row.cells[0].textContent.toLowerCase();
                         let studentName2 = row.cells[1].textContent.toLowerCase();
 
-                        if (studentNumber2.includes(searchValue2) || studentName2.includes(searchValue2)) {
+                        if (studentNumber2.includes(searchValue2) || studentName2.includes(
+                            searchValue2)) {
                             row.style.display = '';
                         } else {
                             row.style.display = 'none';
@@ -605,7 +633,8 @@ function fetchAssessments() {
                         let studentNumber3 = row.cells[0].textContent.toLowerCase();
                         let studentName3 = row.cells[1].textContent.toLowerCase();
 
-                        if (studentNumber3.includes(searchValue3) || studentName3.includes(searchValue3)) {
+                        if (studentNumber3.includes(searchValue3) || studentName3.includes(
+                            searchValue3)) {
                             row.style.display = '';
                         } else {
                             row.style.display = 'none';
@@ -629,81 +658,87 @@ function fetchAssessments() {
                 });
 
 
-                
-    $('#class_code').change(function() {
-        let classCode = $(this).val();
 
-        if (classCode) {
-            $.ajax({
-                url: "{{ route('getSubjectsByClass') }}",
-                method: "GET",
-                data: { class_code: classCode },
-                success: function(response) {
-                    let subjectDropdown = $('#subcode');
-                    subjectDropdown.empty();
-                    subjectDropdown.append('<option value="">Select Subject</option>');
+                $('#class_code').change(function() {
+                    let classCode = $(this).val();
 
-                    if (response.subjects.length > 0) {
-                        response.subjects.forEach(subject => {
-                            subjectDropdown.append(
-                                `<option value="${subject.subcode}">${subject.subname}</option>`
-                            );
+                    if (classCode) {
+                        $.ajax({
+                            url: "{{ route('getSubjectsByClass') }}",
+                            method: "GET",
+                            data: {
+                                class_code: classCode
+                            },
+                            success: function(response) {
+                                let subjectDropdown = $('#subcode');
+                                subjectDropdown.empty();
+                                subjectDropdown.append('<option value="">Select Subject</option>');
+
+                                if (response.subjects.length > 0) {
+                                    response.subjects.forEach(subject => {
+                                        subjectDropdown.append(
+                                            `<option value="${subject.subcode}">${subject.subname}</option>`
+                                        );
+                                    });
+                                }
+                            }
                         });
                     }
-                }
-            });
-        }
-    });
+                });
 
-    $('#class_code2').change(function() {
-        let classCode = $(this).val();
+                $('#class_code2').change(function() {
+                    let classCode = $(this).val();
 
-        if (classCode) {
-            $.ajax({
-                url: "{{ route('getSubjectsByClass') }}",
-                method: "GET",
-                data: { class_code: classCode },
-                success: function(response) {
-                    let subjectDropdown = $('#subcode2');
-                    subjectDropdown.empty();
-                    subjectDropdown.append('<option value="">Select Subject</option>');
+                    if (classCode) {
+                        $.ajax({
+                            url: "{{ route('getSubjectsByClass') }}",
+                            method: "GET",
+                            data: {
+                                class_code: classCode
+                            },
+                            success: function(response) {
+                                let subjectDropdown = $('#subcode2');
+                                subjectDropdown.empty();
+                                subjectDropdown.append('<option value="">Select Subject</option>');
 
-                    if (response.subjects.length > 0) {
-                        response.subjects.forEach(subject => {
-                            subjectDropdown.append(
-                                `<option value="${subject.subcode}">${subject.subname}</option>`
-                            );
+                                if (response.subjects.length > 0) {
+                                    response.subjects.forEach(subject => {
+                                        subjectDropdown.append(
+                                            `<option value="${subject.subcode}">${subject.subname}</option>`
+                                        );
+                                    });
+                                }
+                            }
                         });
                     }
-                }
-            });
-        }
-    });
+                });
 
-    $('#class_code3').change(function() {
-        let classCode = $(this).val();
+                $('#class_code3').change(function() {
+                    let classCode = $(this).val();
 
-        if (classCode) {
-            $.ajax({
-                url: "{{ route('getSubjectsByClass') }}",
-                method: "GET",
-                data: { class_code: classCode },
-                success: function(response) {
-                    let subjectDropdown = $('#subcode3');
-                    subjectDropdown.empty();
-                    subjectDropdown.append('<option value="">Select Subject</option>');
+                    if (classCode) {
+                        $.ajax({
+                            url: "{{ route('getSubjectsByClass') }}",
+                            method: "GET",
+                            data: {
+                                class_code: classCode
+                            },
+                            success: function(response) {
+                                let subjectDropdown = $('#subcode3');
+                                subjectDropdown.empty();
+                                subjectDropdown.append('<option value="">Select Subject</option>');
 
-                    if (response.subjects.length > 0) {
-                        response.subjects.forEach(subject => {
-                            subjectDropdown.append(
-                                `<option value="${subject.subcode}">${subject.subname}</option>`
-                            );
+                                if (response.subjects.length > 0) {
+                                    response.subjects.forEach(subject => {
+                                        subjectDropdown.append(
+                                            `<option value="${subject.subcode}">${subject.subname}</option>`
+                                        );
+                                    });
+                                }
+                            }
                         });
                     }
-                }
-            });
-        }
-    });
+                });
 
 
 
@@ -742,12 +777,12 @@ function fetchAssessments() {
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.student_no}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.fname} ${student.mname} ${student.lname}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.current_class}</td>
-                                {{--<td style="font-size: 14px; padding: 15px 10px;">${student.class_score}</td>--}}
+                                {{-- <td style="font-size: 14px; padding: 15px 10px;">${student.class_score}</td> --}}
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.sat1_paper1}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.sat1_paper2}</td>
-                                {{--<td style="font-size: 14px; padding: 15px 10px;">${student.total_score}</td>--}}
-                                {{--<td style="font-size: 14px; padding: 15px 10px;">${student.exams}</td>--}}
-                                {{--<td style="font-size: 14px; padding: 15px 10px;">${student.exams70}</td>--}}
+                                {{-- <td style="font-size: 14px; padding: 15px 10px;">${student.total_score}</td> --}}
+                                {{-- <td style="font-size: 14px; padding: 15px 10px;">${student.exams}</td> --}}
+                                {{-- <td style="font-size: 14px; padding: 15px 10px;">${student.exams70}</td> --}}
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.sat1}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.grade}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">
@@ -815,12 +850,12 @@ function fetchAssessments() {
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.student_no}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.fname} ${student.mname} ${student.lname}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.current_class}</td>
-                                {{--<td style="font-size: 14px; padding: 15px 10px;">${student.class_score}</td>--}}
+                                {{-- <td style="font-size: 14px; padding: 15px 10px;">${student.class_score}</td> --}}
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.sat2_paper1}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.sat2_paper2}</td>
-                                {{--<td style="font-size: 14px; padding: 15px 10px;">${student.total_score}</td>--}}
-                                {{--<td style="font-size: 14px; padding: 15px 10px;">${student.exams}</td>--}}
-                                {{--<td style="font-size: 14px; padding: 15px 10px;">${student.exams70}</td>--}}
+                                {{-- <td style="font-size: 14px; padding: 15px 10px;">${student.total_score}</td> --}}
+                                {{-- <td style="font-size: 14px; padding: 15px 10px;">${student.exams}</td> --}}
+                                {{-- <td style="font-size: 14px; padding: 15px 10px;">${student.exams70}</td> --}}
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.sat2}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.grade}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">
@@ -965,7 +1000,8 @@ function fetchAssessments() {
                                             text: 'Assessment updated successfully!',
                                             confirmButtonText: 'OK'
                                         }).then(() => {
-                                            $("#edit-assess-sat1-modal").modal("hide");
+                                            $("#edit-assess-sat1-modal").modal(
+                                                "hide");
                                             //location.reload();
                                             $("#filterForm2").submit();
                                         });
@@ -1033,7 +1069,8 @@ function fetchAssessments() {
                                             text: 'Assessment updated successfully!',
                                             confirmButtonText: 'OK'
                                         }).then(() => {
-                                            $("#edit-assess-sat2-modal").modal("hide");
+                                            $("#edit-assess-sat2-modal").modal(
+                                                "hide");
                                             //location.reload();
                                             $("#filterForm3").submit();
                                         });
@@ -1141,43 +1178,44 @@ function fetchAssessments() {
                         alert("Assessment ID is missing!");
                         return;
                     }
-                    let assessmentUrl = "{{ route('newassessment.getAssessment', ':id') }}".replace(':id', assessmentId);
+                    let assessmentUrl = "{{ route('newassessment.getAssessment', ':id') }}".replace(':id',
+                        assessmentId);
 
                     $.ajax({
-    url: assessmentUrl,
-    type: "GET",
-    data: {
-        class_code: classCode,
-        subcode: subcode,
-        term: term
-    },
-    dataType: "json",
-    success: function(data) {
-        if (!data) {
-            alert("Error: Assessment not found.");
-            return;
-        }
+                        url: assessmentUrl,
+                        type: "GET",
+                        data: {
+                            class_code: classCode,
+                            subcode: subcode,
+                            term: term
+                        },
+                        dataType: "json",
+                        success: function(data) {
+                            if (!data) {
+                                alert("Error: Assessment not found.");
+                                return;
+                            }
 
-        // Fill modal with data for editing
-        $("#edit-ass-school_code").val(data.school_code);
-        $("#edit-ass-code").val(data.transid);
-        $("#edit-ass-student-id").val(data.student_no);
-        $("#edit-ass-student-display").val(data.student_name);
-        $("#edit-ass-class-id").val(data.class_code);
-        $("#edit-ass-course").val(data.subcode);
-        $("#edit-ass-sat1").val(data.sat1);
-        $("#edit-ass-sat2").val(data.sat2);
-        $("#edit-ass-term").val(data.term);
-        $("#edit-ass-class_score").val(data.class_score);
-        $("#edit-ass-exam").val(data.exams)
+                            // Fill modal with data for editing
+                            $("#edit-ass-school_code").val(data.school_code);
+                            $("#edit-ass-code").val(data.transid);
+                            $("#edit-ass-student-id").val(data.student_no);
+                            $("#edit-ass-student-display").val(data.student_name);
+                            $("#edit-ass-class-id").val(data.class_code);
+                            $("#edit-ass-course").val(data.subcode);
+                            $("#edit-ass-sat1").val(data.sat1);
+                            $("#edit-ass-sat2").val(data.sat2);
+                            $("#edit-ass-term").val(data.term);
+                            $("#edit-ass-class_score").val(data.class_score);
+                            $("#edit-ass-exam").val(data.exams)
 
-        $("#edit-assess-modal").modal("show");
-    },
-    error: function(xhr) {
-        console.log("AJAX Error:", xhr.responseText); // Debugging
-        alert("Error fetching assessment details.");
-    },
-});
+                            $("#edit-assess-modal").modal("show");
+                        },
+                        error: function(xhr) {
+                            console.log("AJAX Error:", xhr.responseText); // Debugging
+                            alert("Error fetching assessment details.");
+                        },
+                    });
 
                 });
 
@@ -1193,47 +1231,48 @@ function fetchAssessments() {
                         alert("Assessment ID is missing!");
                         return;
                     }
-                    let assessmentUrl = "{{ route('newassessment.getAssessment', ':id') }}".replace(':id', assessmentId);
+                    let assessmentUrl = "{{ route('newassessment.getAssessment', ':id') }}".replace(':id',
+                        assessmentId);
 
                     $.ajax({
-    url: assessmentUrl,
-    type: "GET",
-    data: {
-        class_code: classCode,
-        subcode: subcode,
-        term: term
-    },
-    dataType: "json",
-    success: function(data) {
-        if (!data) {
-            alert("Error: Assessment not found.");
-            return;
-        }
+                        url: assessmentUrl,
+                        type: "GET",
+                        data: {
+                            class_code: classCode,
+                            subcode: subcode,
+                            term: term
+                        },
+                        dataType: "json",
+                        success: function(data) {
+                            if (!data) {
+                                alert("Error: Assessment not found.");
+                                return;
+                            }
 
-        // Fill modal with data for editing
-        $("#edit-ass-sat1-school_code").val(data.school_code);
-        $("#edit-ass-sat1-code").val(data.transid);
-        $("#edit-ass-sat1-student-id").val(data.student_no);
-        $("#edit-ass-sat1-student-display").val(data.student_name);
-        $("#edit-ass-sat1-class-id").val(data.class_code);
-        $("#edit-ass-sat1-course").val(data.subcode);
-        $("#edit-ass-sat1_paper1").val(data.sat1_paper1);
-        $("#edit-ass-sat1_paper2").val(data.sat1_paper2);
-        $("#edit-ass-sat2_paper1").val(data.sat2_paper1);
-        $("#edit-ass-sat2_paper2").val(data.sat2_paper2);
-        $("#edit-ass-sat1-term").val(data.term);
-        $("#edit-ass-sat1-class_score").val(data.class_score);
-        $("#edit-ass-sat1-exam").val(data.exams);
-        $("#edit-ass-sat1-sat1").val(data.sat1);
-        $("#edit-ass-sat1-sat2").val(data.sat2);
+                            // Fill modal with data for editing
+                            $("#edit-ass-sat1-school_code").val(data.school_code);
+                            $("#edit-ass-sat1-code").val(data.transid);
+                            $("#edit-ass-sat1-student-id").val(data.student_no);
+                            $("#edit-ass-sat1-student-display").val(data.student_name);
+                            $("#edit-ass-sat1-class-id").val(data.class_code);
+                            $("#edit-ass-sat1-course").val(data.subcode);
+                            $("#edit-ass-sat1_paper1").val(data.sat1_paper1);
+                            $("#edit-ass-sat1_paper2").val(data.sat1_paper2);
+                            $("#edit-ass-sat2_paper1").val(data.sat2_paper1);
+                            $("#edit-ass-sat2_paper2").val(data.sat2_paper2);
+                            $("#edit-ass-sat1-term").val(data.term);
+                            $("#edit-ass-sat1-class_score").val(data.class_score);
+                            $("#edit-ass-sat1-exam").val(data.exams);
+                            $("#edit-ass-sat1-sat1").val(data.sat1);
+                            $("#edit-ass-sat1-sat2").val(data.sat2);
 
-        $("#edit-assess-sat1-modal").modal("show");
-    },
-    error: function(xhr) {
-        console.log("AJAX Error:", xhr.responseText); // Debugging
-        alert("Error fetching assessment details.");
-    },
-});
+                            $("#edit-assess-sat1-modal").modal("show");
+                        },
+                        error: function(xhr) {
+                            console.log("AJAX Error:", xhr.responseText); // Debugging
+                            alert("Error fetching assessment details.");
+                        },
+                    });
 
                 });
 
@@ -1248,47 +1287,48 @@ function fetchAssessments() {
                         alert("Assessment ID is missing!");
                         return;
                     }
-                    let assessmentUrl = "{{ route('newassessment.getAssessment', ':id') }}".replace(':id', assessmentId);
+                    let assessmentUrl = "{{ route('newassessment.getAssessment', ':id') }}".replace(':id',
+                        assessmentId);
 
                     $.ajax({
-    url: assessmentUrl,
-    type: "GET",
-    data: {
-        class_code: classCode,
-        subcode: subcode,
-        term: term
-    },
-    dataType: "json",
-    success: function(data) {
-        if (!data) {
-            alert("Error: Assessment not found.");
-            return;
-        }
+                        url: assessmentUrl,
+                        type: "GET",
+                        data: {
+                            class_code: classCode,
+                            subcode: subcode,
+                            term: term
+                        },
+                        dataType: "json",
+                        success: function(data) {
+                            if (!data) {
+                                alert("Error: Assessment not found.");
+                                return;
+                            }
 
-        // Fill modal with data for editing
-        $("#edit-ass-sat2-school_code").val(data.school_code);
-        $("#edit-ass-sat2-code").val(data.transid);
-        $("#edit-ass-sat2-student-id").val(data.student_no);
-        $("#edit-ass-sat2-student-display").val(data.student_name);
-        $("#edit-ass-sat2-class-id").val(data.class_code);
-        $("#edit-ass-sat2-course").val(data.subcode);
-        $("#edit-ass-sat2_paper1").val(data.sat2_paper1);
-        $("#edit-ass-sat2_paper2").val(data.sat2_paper2);
-        $("#edit-ass-sat1_paper1").val(data.sat1_paper1);
-        $("#edit-ass-sat1_paper2").val(data.sat1_paper2);
-        $("#edit-ass-sat2-term").val(data.term);
-        $("#edit-ass-sat2-class_score").val(data.class_score);
-        $("#edit-ass-sat2-exam").val(data.exams);
-        $("#edit-ass-sat2-sat1").val(data.sat1);
-        $("#edit-ass-sat2-sat2").val(data.sat2);
+                            // Fill modal with data for editing
+                            $("#edit-ass-sat2-school_code").val(data.school_code);
+                            $("#edit-ass-sat2-code").val(data.transid);
+                            $("#edit-ass-sat2-student-id").val(data.student_no);
+                            $("#edit-ass-sat2-student-display").val(data.student_name);
+                            $("#edit-ass-sat2-class-id").val(data.class_code);
+                            $("#edit-ass-sat2-course").val(data.subcode);
+                            $("#edit-ass-sat2_paper1").val(data.sat2_paper1);
+                            $("#edit-ass-sat2_paper2").val(data.sat2_paper2);
+                            $("#edit-ass-sat1_paper1").val(data.sat1_paper1);
+                            $("#edit-ass-sat1_paper2").val(data.sat1_paper2);
+                            $("#edit-ass-sat2-term").val(data.term);
+                            $("#edit-ass-sat2-class_score").val(data.class_score);
+                            $("#edit-ass-sat2-exam").val(data.exams);
+                            $("#edit-ass-sat2-sat1").val(data.sat1);
+                            $("#edit-ass-sat2-sat2").val(data.sat2);
 
-        $("#edit-assess-sat2-modal").modal("show");
-    },
-    error: function(xhr) {
-        console.log("AJAX Error:", xhr.responseText); // Debugging
-        alert("Error fetching assessment details.");
-    },
-});
+                            $("#edit-assess-sat2-modal").modal("show");
+                        },
+                        error: function(xhr) {
+                            console.log("AJAX Error:", xhr.responseText); // Debugging
+                            alert("Error fetching assessment details.");
+                        },
+                    });
 
                 });
 
@@ -1329,9 +1369,3 @@ function fetchAssessments() {
             });
         </script>
     @endsection
-
-
-
-
-
-    
