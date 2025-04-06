@@ -60,6 +60,203 @@ class NewAssessmentController extends Controller
     }
 
     public function getSubjectsByClass(Request $request)
+{
+    $class = DB::table('tblclass')
+        ->where('class_code', $request->class_code)
+        ->where('deleted', '0')
+        ->first();
+
+    if (!$class) {
+        return response()->json(['subjects' => []]);
+    }
+
+    $gradeCode = $class->grade_code;
+    $staffNo = auth()->user()->userid;
+
+    $subjects = DB::table('tblsubject_assignment')
+        ->join('tblsubject', 'tblsubject_assignment.subcode', '=', 'tblsubject.subcode')
+        ->where('tblsubject_assignment.staffno', $staffNo)
+        ->where('tblsubject_assignment.grade_code', $gradeCode)
+        ->where('tblsubject_assignment.deleted', '0')
+        ->select('tblsubject.subname', 'tblsubject.subcode')
+        ->get();
+
+    return response()->json(['subjects' => $subjects]);
+}
+
+
+public function filter(Request $request)
+{
+    $request->validate([
+        'class_code' => 'required',
+        'subcode' => 'required',
+        'term' => 'required',
+    ]);
+
+    $classCode = $request->class_code;
+    $subcode = $request->subcode;
+    $term = $request->term;
+
+    // Fetch students with their assessments if available
+    $students = DB::table('tblstudent')
+        ->leftJoin('tblassmain_ai', function ($join) use ($classCode, $subcode, $term) {
+            $join->on('tblassmain_ai.student_no', '=', 'tblstudent.student_no')
+                ->where('tblassmain_ai.class_code', $classCode)
+                ->where('tblassmain_ai.subcode', $subcode)
+                ->where('tblassmain_ai.term', $term)
+                ->where('tblassmain_ai.deleted', '0');
+        })
+        ->where('tblstudent.current_class', $classCode)
+        ->where('tblstudent.deleted', '0') // Exclude deleted students
+        ->select(
+            'tblstudent.student_no',
+            'tblstudent.fname',
+            'tblstudent.mname',
+            'tblstudent.lname',
+            'tblstudent.current_class',
+            DB::raw('COALESCE(tblassmain_ai.transid, tblstudent.transid) as transid'),
+            DB::raw('IFNULL(tblassmain_ai.class_code, "' . $classCode . '") as class_code'),
+            DB::raw('IFNULL(tblassmain_ai.subcode, "' . $subcode . '") as subcode'),
+            DB::raw('IFNULL(tblassmain_ai.term, "' . $term . '") as term'),
+            DB::raw('IFNULL(tblassmain_ai.deleted, "0") as deleted'),
+            DB::raw('COALESCE(tblassmain_ai.class_score, 0) as class_score'),
+            DB::raw('COALESCE(tblassmain_ai.sat1, 0) as sat1'),
+            DB::raw('COALESCE(tblassmain_ai.sat2, 0) as sat2'),
+            DB::raw('COALESCE(tblassmain_ai.sat1_paper1, 0) as sat1_paper1'),
+            DB::raw('COALESCE(tblassmain_ai.sat1_paper2, 0) as sat1_paper2'),
+            DB::raw('COALESCE(tblassmain_ai.sat2_paper1, 0) as sat2_paper1'),
+            DB::raw('COALESCE(tblassmain_ai.sat2_paper2, 0) as sat2_paper2'),
+            DB::raw('COALESCE(tblassmain_ai.total_class_score, 0) as total_score'),
+            DB::raw('COALESCE(tblassmain_ai.exam, 0) as exams'),
+            DB::raw('COALESCE(tblassmain_ai.exam70, 0) as exams70'),
+            DB::raw('COALESCE(tblassmain_ai.total_grade, 0) as total_grade'),
+            DB::raw('COALESCE(tblassmain_ai.grade, "Ungraded") as grade'),
+            DB::raw('COALESCE(tblassmain_ai.t_remarks, "No Remarks") as t_remarks')
+        )
+        ->orderBy("tblstudent.fname", "asc")
+        ->get();
+
+    return response()->json([
+        'ok' => true,
+        'students' => $students,
+    ]);
+}
+
+
+
+
+public function store(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        "class_code" => "required",
+        "subcode" => "required",
+        "term" => "required",
+        "student_no" => "required",
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            "ok" => false,
+            "msg" => "Validation failed. Please complete all required fields.",
+        ]);
+    }
+
+    $studentDetails = DB::table("tblstudent")
+        ->where("deleted", "0")
+        ->where("school_code", $request->school_code)
+        ->where("student_no", $request->student_no)
+        ->first();
+
+    if (!$studentDetails) {
+        return response()->json([
+            "ok" => false,
+            "msg" => "Student not found.",
+        ]);
+    }
+
+    $sat1 = $request->sat1_paper1 + $request->sat1_paper2;
+    $sat2 = $request->sat2_paper1 + $request->sat2_paper2;
+    //$totalClassScore = (($sat1 + $request->sat2 + $request->class_score) / 220) * 30;
+
+    $totalClassScore = (($request->sat1 + $request->sat2 + $request->class_score) / 220) * 30;
+    $totalClassScore = round($totalClassScore);
+    $exam70 = $request->exam*0.7;
+    $totalGrade = $totalClassScore + $exam70;
+    $totalGrade = round($totalGrade);
+
+    // Get grade and remarks
+    ["grade" => $grade, "remarks" => $remarks] = $this->calculateGrade($totalGrade);
+
+    try {
+        $existingAssessment = DB::table("tblassmain_ai")
+            ->where("student_no", $request->student_no)
+            ->where("class_code", $request->class_code)
+            ->where("term", $request->term)
+            ->where("subcode", $request->subcode)
+            ->first();
+
+        if ($existingAssessment) {
+            // Update the existing assessment
+            $user = auth()->user();
+            DB::table("tblassmain_ai")
+                ->where("transid", $existingAssessment->transid)
+                ->update([
+                    "class_score" => $request->class_score,
+                    "sat1" => $request->sat1,
+                    "sat1" => $sat1,
+                    "sat2" => $sat2,
+                    "sat1_paper1" => $request->sat1_paper1,
+                    "sat1_paper2" => $request->sat1_paper2,
+                    "sat2_paper1" => $request->sat2_paper1,
+                    "sat2_paper2" => $request->sat2_paper2,
+                    "total_class_score" => $totalClassScore,
+                    "exam" => $request->exam,
+                    "exam70" => $exam70,
+                    "total_grade" => $totalGrade,
+                    "grade" => $grade,
+                    "t_remarks" => $remarks,
+                    "deleted" => "0",
+                    "modifyuser" => $user->userid,
+                    "modifydate" => now(),
+                ]);
+
+            return response()->json([
+                "ok" => true,
+                "msg" => "Assessment updated successfully",
+            ]);
+        } else {
+            // Create a new assessment
+            $newTransId = strtoupper(bin2hex(random_bytes(5)));
+            $user = auth()->user();
+            DB::table("tblassmain_ai")->insert([
+                "transid" => $newTransId,
+                "school_code" => $request->school_code,
+                "acyear" => $studentDetails->admyear,
+                "term" => $request->term,
+                "student_no" => $request->student_no,
+                "subcode" => $request->subcode,
+                "class_code" => $request->class_code,
+                "sat1_paper1" => $request->sat1_paper1,
+                "sat1_paper2" => $request->sat1_paper2,
+                "sat1" => $sat1,
+                "sat2_paper1" => $request->sat2_paper1,
+                "sat2_paper2" => $request->sat2_paper2,
+                "sat2" => $sat2,
+                "total_class_score" => $totalClassScore,
+                "exam" => $request->exam,
+                "exam70" => $exam70,
+                "total_grade" => $totalGrade,
+                "grade" => $grade,
+                "t_remarks" => $remarks,
+                "deleted" => "0",
+                "createuser" => $user->userid,
+                "createdate" => now(),
+            ]);
+
+            return response()->json([
+                "ok" => true,
+                "msg" => "Assessment added successfully",
+            ]);
     {
         $class = DB::table('tblclass')
             ->where('class_code', $request->class_code)
@@ -273,6 +470,15 @@ class NewAssessmentController extends Controller
         }
     }
 
+public function getAssessment(Request $request, $id)
+{
+    // Get filter values from the request
+    // $classCode = $request->input('class_code', '');
+    // $subcode = $request->input('subcode', '');
+    // $term = $request->input('term', '');
+    $classCode = $request->class_code;
+    $subcode = $request->subcode;
+    $term = $request->term;
     public function deestroy(Request $request)
     {
         $assessment = DB::table('tblassmain_ai')->where('transid', $request->transid)->first();
@@ -355,16 +561,48 @@ class NewAssessmentController extends Controller
                     WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode'
                          OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term'
                     THEN '0'
-                    ELSE COALESCE(tblassmain_ai.paper1, '0')
-                END AS paper1
+                    ELSE COALESCE(tblassmain_ai.sat1, '0')
+                END AS sat1
             "),
                 DB::raw("
                 CASE
                     WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode'
                          OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term'
                     THEN '0'
-                    ELSE COALESCE(tblassmain_ai.paper2, '0')
-                END AS paper2
+                    ELSE COALESCE(tblassmain_ai.sat1_paper1, '0')
+                END AS sat1_paper1
+            "),
+            DB::raw("
+            CASE
+                WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
+                     OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
+                THEN '0'
+                ELSE COALESCE(tblassmain_ai.sat1_paper2, '0')
+            END AS sat1_paper2
+           "),
+           DB::raw("
+                CASE
+                    WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
+                         OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
+                    THEN '0'
+                    ELSE COALESCE(tblassmain_ai.sat2_paper1, '0')
+                END AS sat2_paper1
+            "),
+            DB::raw("
+            CASE
+                WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
+                     OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
+                THEN '0'
+                ELSE COALESCE(tblassmain_ai.sat2_paper2, '0')
+            END AS sat2_paper2
+           "),
+            DB::raw("
+                CASE
+                    WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
+                         OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
+                    THEN '0'
+                    ELSE COALESCE(tblassmain_ai.sat2, '0')
+                END AS sat2
             "),
                 DB::raw("
                 CASE
@@ -395,6 +633,51 @@ class NewAssessmentController extends Controller
 
         return response()->json($assessment);
     }
+
+    return response()->json($assessment);
+}
+
+
+
+public function fetchAssessments(Request $request)
+{
+    $class_code = $request->input('class_code');
+    $term = $request->input('term');
+    $student_no = $request->input('student_no');
+
+    $assessments = DB::table('tblassmain_ai')
+        ->join('tblsubject', 'tblassmain_ai.subcode', '=', 'tblsubject.subcode')
+        ->join('tblstudent', 'tblassmain_ai.student_no', '=', 'tblstudent.student_no')
+        ->leftJoin('tblclass', 'tblclass.class_code', '=', DB::raw("'$class_code'"))
+        ->leftJoin('tblcomment_ia', 'tblassmain_ai.student_no', '=', 'tblcomment_ia.student_no') 
+        ->where('tblassmain_ai.class_code', $class_code)
+        ->where('tblassmain_ai.term', $term)
+        ->where('tblassmain_ai.student_no', $student_no)
+        ->where('tblassmain_ai.deleted', '0')
+        ->select(
+            'tblsubject.subname',
+            'tblclass.class_desc as class_name',
+            DB::raw("TRIM(CONCAT(COALESCE(tblstudent.fname, ''), ' ', COALESCE(tblstudent.mname, ''), ' ', COALESCE(tblstudent.lname, ''))) AS student_name"),
+            DB::raw('COALESCE(tblassmain_ai.class_score, 0) as class_score'),
+            DB::raw('COALESCE(tblassmain_ai.sat1, 0) as sat1'),
+            DB::raw('COALESCE(tblassmain_ai.sat2, 0) as sat2'),
+            DB::raw('COALESCE(tblassmain_ai.sat1_paper1, 0) as sat1_paper1'),
+            DB::raw('COALESCE(tblassmain_ai.sat1_paper2, 0) as sat1_paper2'),
+            DB::raw('COALESCE(tblassmain_ai.sat2_paper1, 0) as sat2_paper1'),
+            DB::raw('COALESCE(tblassmain_ai.sat2_paper2, 0) as sat2_paper2'),
+            DB::raw('COALESCE(tblassmain_ai.total_class_score, 0) as total_score'),
+            DB::raw('COALESCE(tblassmain_ai.exam, 0) as exams'),
+            DB::raw('COALESCE(tblassmain_ai.exam70, 0) as exams70'),
+            DB::raw('COALESCE(tblassmain_ai.total_grade, 0) as total_grade'),
+            DB::raw('COALESCE(tblassmain_ai.grade, "N/A") as grade'),
+            DB::raw('COALESCE(tblassmain_ai.t_remarks, "No Remarks") as t_remarks'),
+            DB::raw('COALESCE(tblcomment_ia.ct_remarks, "No Comment") as ct_remarks')
+        )
+        ->distinct()
+        ->get();
+
+    return response()->json($assessments);
+}
 
     public function fetchAssessments(Request $request)
     {

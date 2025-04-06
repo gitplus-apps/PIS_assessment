@@ -67,9 +67,9 @@ class AssessmentUploadController extends Controller
             $requiredColumns = [
                 'student_name' => ['student name', 'name', 'names'],
                 'class_score' => ['class score', 'CLASS SCORE (40)'],
-                'sat_1' => ['sat 1', 'paper1', 'SAT 1 (80)'],
-                'sat_2' => ['sat 2', 'paper2', 'SAT 2 (100)'],
-                'exams' => ['exams', 'exams score', 'exam', 'exam score', ''],
+                'sat_1' => ['sat 1', 'SAT 1 (80)'],
+                'sat_2' => ['sat 2', 'SAT 2 (100)'],
+                'exams' => ['exams', 'exams score', 'exam', 'exam score','']
             ];
 
             // Map column indexes
@@ -142,18 +142,14 @@ class AssessmentUploadController extends Controller
                     continue;
                 }
 
-                // Extract assessment data using mapped indexes
-                // $classScore = isset($row[$columnIndexes['class_score']]) ? (float)$row[$columnIndexes['class_score']] : null;
-                // $paper1 = isset($row[$columnIndexes['sat_1']]) ? (float)$row[$columnIndexes['sat_1']] : null;
-                // $paper2 = isset($row[$columnIndexes['sat_2']]) ? (float)$row[$columnIndexes['sat_2']] : null;
-                // $exams = isset($row[$columnIndexes['exams']]) ? (float)$row[$columnIndexes['exams']] : null;
-
-                $classScore = isset($row[$columnIndexes['class_score']]) && $row[$columnIndexes['class_score']] !== '' ? (float) $row[$columnIndexes['class_score']] : 0;
-                $paper1 = isset($row[$columnIndexes['sat_1']]) && $row[$columnIndexes['sat_1']] !== '' ? (float) $row[$columnIndexes['sat_1']] : 0;
-                $paper2 = isset($row[$columnIndexes['sat_2']]) && $row[$columnIndexes['sat_2']] !== '' ? (float) $row[$columnIndexes['sat_2']] : 0;
-                $exams = isset($row[$columnIndexes['exams']]) && $row[$columnIndexes['exams']] !== '' ? (float) $row[$columnIndexes['exams']] : 0;
+                $classScore = isset($row[$columnIndexes['class_score']]) && $row[$columnIndexes['class_score']] !== '' ? (float)$row[$columnIndexes['class_score']] : 0;
+$sat1 = isset($row[$columnIndexes['sat_1']]) && $row[$columnIndexes['sat_1']] !== '' ? (float)$row[$columnIndexes['sat_1']] : 0;
+$sat2 = isset($row[$columnIndexes['sat_2']]) && $row[$columnIndexes['sat_2']] !== '' ? (float)$row[$columnIndexes['sat_2']] : 0;
+$exams = isset($row[$columnIndexes['exams']]) && $row[$columnIndexes['exams']] !== '' ? (float)$row[$columnIndexes['exams']] : 0;
 
                 // Calculate total score
+                $totalClassScore = (($sat1 + $sat2 + $classScore) / 300) * 30;
+                $exam70 = $exams*0.7;
                 $totalClassScore = round((($paper1 + $paper2 + $classScore) / 300) * 30);
                 $exam70 = round($exams * 0.7);
                 $totalGrade = $totalClassScore + $exam70;
@@ -189,8 +185,8 @@ class AssessmentUploadController extends Controller
                     'class_code' => $classCode,
                     'subcode' => $subjectCode,
                     'class_score' => $classScore,
-                    'paper1' => $paper1,
-                    'paper2' => $paper2,
+                    'sat1' => $sat1,
+                    'sat2' => $sat2,
                     'total_class_score' => $totalClassScore,
                     'exam' => $exams,
                     'exam70' => $exam70,
