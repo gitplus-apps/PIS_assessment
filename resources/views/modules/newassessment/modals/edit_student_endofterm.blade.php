@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="edit-student-assess-form-admin">
+                <form id="edit-student-endofterm-form-admin">
                     @csrf
                     <input type="hidden" name="school_code" id="edit-ass-school_code">
                     <input type="hidden" name="assessment_id" id="edit-ass-code">
@@ -39,14 +39,14 @@
                     </div> 
 
                     <div class="form-group">
-                        <label for="edit-ass-paper1">SAT 1</label>
-                        <input type="number" id="edit-ass-paper1" name="paper1"
+                        <label for="edit-ass-sat1">SAT 1</label>
+                        <input type="number" id="edit-ass-sat1" name="sat1"
                             class="form-control form-control-sm" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="edit-ass-paper2">SAT 2</label>
-                        <input type="number" name="paper2" id="edit-ass-paper2"
+                        <label for="edit-ass-sat2">SAT 2</label>
+                        <input type="number" name="sat2" id="edit-ass-sat2"
                             class="form-control form-control-sm" required>
                     </div>
 
@@ -58,8 +58,8 @@
 
                 </form>
                 <div class="modal-footer">
-                    <button class="btn btn-light btn-sm" form="edit-student-assess-form-admin" type="reset">Reset</button>
-                    <button class="btn btn-primary btn-sm" form="edit-student-assess-form-admin" type="submit">Submit</button>
+                    <button class="btn btn-light btn-sm" form="edit-student-endofterm-form-admin" type="reset">Reset</button>
+                    <button class="btn btn-primary btn-sm" form="edit-student-endofterm-form-admin" type="submit">Submit</button>
                 </div>
             </div>
         </div>

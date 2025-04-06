@@ -132,8 +132,12 @@ public function filter(Request $request)
             DB::raw('IFNULL(tblassmain_ai.term, "' . $term . '") as term'),
             DB::raw('IFNULL(tblassmain_ai.deleted, "0") as deleted'),
             DB::raw('COALESCE(tblassmain_ai.class_score, 0) as class_score'),
-            DB::raw('COALESCE(tblassmain_ai.paper1, 0) as paper1'),
-            DB::raw('COALESCE(tblassmain_ai.paper2, 0) as paper2'),
+            DB::raw('COALESCE(tblassmain_ai.sat1, 0) as sat1'),
+            DB::raw('COALESCE(tblassmain_ai.sat2, 0) as sat2'),
+            DB::raw('COALESCE(tblassmain_ai.sat1_paper1, 0) as sat1_paper1'),
+            DB::raw('COALESCE(tblassmain_ai.sat1_paper2, 0) as sat1_paper2'),
+            DB::raw('COALESCE(tblassmain_ai.sat2_paper1, 0) as sat2_paper1'),
+            DB::raw('COALESCE(tblassmain_ai.sat2_paper2, 0) as sat2_paper2'),
             DB::raw('COALESCE(tblassmain_ai.total_class_score, 0) as total_score'),
             DB::raw('COALESCE(tblassmain_ai.exam, 0) as exams'),
             DB::raw('COALESCE(tblassmain_ai.exam70, 0) as exams70'),
@@ -159,8 +163,6 @@ public function store(Request $request)
         "class_code" => "required",
         "subcode" => "required",
         "term" => "required",
-        "paper1" => "required|numeric",
-        "paper2" => "required|numeric",
         "student_no" => "required",
     ]);
 
@@ -184,12 +186,15 @@ public function store(Request $request)
         ]);
     }
 
-    // Calculate total score
-    //$totalScore = $request->paper1 + $request->paper2;
+    $sat1 = $request->sat1_paper1 + $request->sat1_paper2;
+    $sat2 = $request->sat2_paper1 + $request->sat2_paper2;
+    //$totalClassScore = (($sat1 + $request->sat2 + $request->class_score) / 220) * 30;
 
-    $totalClassScore = (($request->paper1 + $request->paper2 + $request->class_score) / 300) * 30;
+    $totalClassScore = (($request->sat1 + $request->sat2 + $request->class_score) / 220) * 30;
+    $totalClassScore = round($totalClassScore);
     $exam70 = $request->exam*0.7;
     $totalGrade = $totalClassScore + $exam70;
+    $totalGrade = round($totalGrade);
 
     // Get grade and remarks
     ["grade" => $grade, "remarks" => $remarks] = $this->calculateGrade($totalGrade);
@@ -209,8 +214,13 @@ public function store(Request $request)
                 ->where("transid", $existingAssessment->transid)
                 ->update([
                     "class_score" => $request->class_score,
-                    "paper1" => $request->paper1,
-                    "paper2" => $request->paper2,
+                    "sat1" => $request->sat1,
+                    "sat1" => $sat1,
+                    "sat2" => $sat2,
+                    "sat1_paper1" => $request->sat1_paper1,
+                    "sat1_paper2" => $request->sat1_paper2,
+                    "sat2_paper1" => $request->sat2_paper1,
+                    "sat2_paper2" => $request->sat2_paper2,
                     "total_class_score" => $totalClassScore,
                     "exam" => $request->exam,
                     "exam70" => $exam70,
@@ -238,8 +248,12 @@ public function store(Request $request)
                 "student_no" => $request->student_no,
                 "subcode" => $request->subcode,
                 "class_code" => $request->class_code,
-                "paper1" => $request->paper1,
-                "paper2" => $request->paper2,
+                "sat1_paper1" => $request->sat1_paper1,
+                "sat1_paper2" => $request->sat1_paper2,
+                "sat1" => $sat1,
+                "sat2_paper1" => $request->sat2_paper1,
+                "sat2_paper2" => $request->sat2_paper2,
+                "sat2" => $sat2,
                 "total_class_score" => $totalClassScore,
                 "exam" => $request->exam,
                 "exam70" => $exam70,
@@ -324,9 +338,12 @@ public function destroy(Request $request) {
 public function getAssessment(Request $request, $id)
 {
     // Get filter values from the request
-    $classCode = $request->input('class_code', '');
-    $subcode = $request->input('subcode', '');
-    $term = $request->input('term', '');
+    // $classCode = $request->input('class_code', '');
+    // $subcode = $request->input('subcode', '');
+    // $term = $request->input('term', '');
+    $classCode = $request->class_code;
+    $subcode = $request->subcode;
+    $term = $request->term;
 
     $assessment = DB::table("tblstudent")
         ->leftJoin("tblassmain_ai", function ($join) use ($subcode, $classCode, $term) {
@@ -373,16 +390,48 @@ public function getAssessment(Request $request, $id)
                     WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
                          OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
                     THEN '0'
-                    ELSE COALESCE(tblassmain_ai.paper1, '0')
-                END AS paper1
+                    ELSE COALESCE(tblassmain_ai.sat1, '0')
+                END AS sat1
             "),
             DB::raw("
                 CASE
                     WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
                          OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
                     THEN '0'
-                    ELSE COALESCE(tblassmain_ai.paper2, '0')
-                END AS paper2
+                    ELSE COALESCE(tblassmain_ai.sat1_paper1, '0')
+                END AS sat1_paper1
+            "),
+            DB::raw("
+            CASE
+                WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
+                     OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
+                THEN '0'
+                ELSE COALESCE(tblassmain_ai.sat1_paper2, '0')
+            END AS sat1_paper2
+           "),
+           DB::raw("
+                CASE
+                    WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
+                         OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
+                    THEN '0'
+                    ELSE COALESCE(tblassmain_ai.sat2_paper1, '0')
+                END AS sat2_paper1
+            "),
+            DB::raw("
+            CASE
+                WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
+                     OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
+                THEN '0'
+                ELSE COALESCE(tblassmain_ai.sat2_paper2, '0')
+            END AS sat2_paper2
+           "),
+            DB::raw("
+                CASE
+                    WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode' 
+                         OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term' 
+                    THEN '0'
+                    ELSE COALESCE(tblassmain_ai.sat2, '0')
+                END AS sat2
             "),
             DB::raw("
                 CASE
@@ -436,8 +485,12 @@ public function fetchAssessments(Request $request)
             'tblclass.class_desc as class_name',
             DB::raw("TRIM(CONCAT(COALESCE(tblstudent.fname, ''), ' ', COALESCE(tblstudent.mname, ''), ' ', COALESCE(tblstudent.lname, ''))) AS student_name"),
             DB::raw('COALESCE(tblassmain_ai.class_score, 0) as class_score'),
-            DB::raw('COALESCE(tblassmain_ai.paper1, 0) as paper1'),
-            DB::raw('COALESCE(tblassmain_ai.paper2, 0) as paper2'),
+            DB::raw('COALESCE(tblassmain_ai.sat1, 0) as sat1'),
+            DB::raw('COALESCE(tblassmain_ai.sat2, 0) as sat2'),
+            DB::raw('COALESCE(tblassmain_ai.sat1_paper1, 0) as sat1_paper1'),
+            DB::raw('COALESCE(tblassmain_ai.sat1_paper2, 0) as sat1_paper2'),
+            DB::raw('COALESCE(tblassmain_ai.sat2_paper1, 0) as sat2_paper1'),
+            DB::raw('COALESCE(tblassmain_ai.sat2_paper2, 0) as sat2_paper2'),
             DB::raw('COALESCE(tblassmain_ai.total_class_score, 0) as total_score'),
             DB::raw('COALESCE(tblassmain_ai.exam, 0) as exams'),
             DB::raw('COALESCE(tblassmain_ai.exam70, 0) as exams70'),
