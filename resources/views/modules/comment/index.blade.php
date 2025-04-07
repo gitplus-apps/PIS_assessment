@@ -41,10 +41,11 @@
                     </div>
             </form>
 
+            <h5 style="text-align: center; margin-top: 50px;">Assessment Comment</h5>
             <div class="container mt-4">
-                <h5 style="text-align: center;">Subjects and Assessment Scores</h5>
+                {{--<h5 style="text-align: center;">Subjects and Assessment Scores</h5>--}}
                 <table class="table table-bordered table-striped text-center"class="table table-bordered text-center" id="assessmentTable">
-                    <thead class="thead-dark">
+                    {{--<thead class="thead-dark">
                         <tr>
                             <th>Subjects</th>
                             <th>Paper 1 (50%)</th>
@@ -53,7 +54,7 @@
                             <th>Grade</th>
                             <th>Remarks</th>
                         </tr>
-                    </thead>
+                    </thead>--}}
                     <tbody id="assessmentData">
                         <tr>
                             <td colspan="7">No data available</td>
@@ -155,7 +156,8 @@
 
         if (data.assessments.length > 0) {
             data.assessments.forEach(assess => {
-                tbody.innerHTML += `<tr>
+                tbody.innerHTML += `
+                {{--<tr>
                     <td>${assess.subname}</td>
                     <td>${assess.paper1 ?? 'N/A'}</td>
                     <td>${assess.paper2 ?? 'N/A'}</td>
@@ -163,7 +165,7 @@
                     <td>${assess.grade}</td>
                     <td>${assess.t_remarks}</td>
                     
-                </tr>
+                </tr>--}}
                 <h6>Comment</h6>
              <div class="d-flex flex-column gap-2">
     <span class="fw-semibold text-secondary text-wrap">${assess.comment}</span>

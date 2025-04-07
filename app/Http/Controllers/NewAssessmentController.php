@@ -126,7 +126,8 @@ class NewAssessmentController extends Controller
                 DB::raw('COALESCE(tblassmain_ai.exam70, 0) as exams70'),
                 DB::raw('COALESCE(tblassmain_ai.total_grade, 0) as total_grade'),
                 DB::raw('COALESCE(tblassmain_ai.grade, "Ungraded") as grade'),
-                DB::raw('COALESCE(tblassmain_ai.t_remarks, "No Remarks") as t_remarks')
+                DB::raw('COALESCE(tblassmain_ai.t_remarks, "No Remarks") as t_remarks'),
+                DB::raw('COALESCE(tblassmain_ai.t_comment, "No Comment") as t_comment')
             )
             ->orderBy('tblstudent.fname', 'asc')
             ->get();
@@ -210,6 +211,7 @@ class NewAssessmentController extends Controller
                         'total_grade' => $totalGrade,
                         'grade' => $grade,
                         't_remarks' => $remarks,
+                        't_comment' => $request->t_comment,
                         'deleted' => '0',
                         'modifyuser' => $user->userid,
                         'modifydate' => now(),
@@ -244,6 +246,7 @@ class NewAssessmentController extends Controller
                     'total_grade' => $totalGrade,
                     'grade' => $grade,
                     't_remarks' => $remarks,
+                    't_comment' => $request->t_comment,
                     'deleted' => '0',
                     'createuser' => $user->userid,
                     'createdate' => now(),
@@ -382,6 +385,14 @@ class NewAssessmentController extends Controller
                     THEN '0'
                     ELSE COALESCE(tblassmain_ai.exam, '0')
                 END AS exams
+                "),
+                DB::raw("
+                CASE
+                    WHEN tblassmain_ai.student_no IS NULL OR tblassmain_ai.subcode != '$subcode'
+                         OR tblassmain_ai.class_code != '$classCode' OR tblassmain_ai.term != '$term'
+                    THEN '0'
+                    ELSE COALESCE(tblassmain_ai.t_comment, 'No Comment')
+                END AS t_comment
                 ")
             )
             ->where(function ($query) use ($id) {
@@ -396,6 +407,7 @@ class NewAssessmentController extends Controller
 
         return response()->json($assessment);
     }
+
 
     public function fetchAssessments(Request $request)
     {
@@ -432,6 +444,7 @@ class NewAssessmentController extends Controller
                 DB::raw('COALESCE(tblassmain_ai.total_grade, 0) as total_grade'),
                 DB::raw('COALESCE(tblassmain_ai.grade, "N/A") as grade'),
                 DB::raw('COALESCE(tblassmain_ai.t_remarks, "No Remarks") as t_remarks'),
+                DB::raw('COALESCE(tblassmain_ai.t_comment, "No Comment") as t_comment'),
                 DB::raw('COALESCE(tblcomment_ia.ct_remarks, "No Comment") as ct_remarks')
             )
             ->distinct()
