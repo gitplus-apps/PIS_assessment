@@ -22,8 +22,10 @@
                     <input type="hidden" name="sat2" id="edit-ass-sat2-sat2">
                     <input type="hidden" name="exam" id="edit-ass-sat2-exam">
 
-                    <input type="hidden" name="sat1_paper1" id="edit-ass-sat1_paper1">
-                    <input type="hidden" name="sat1_paper2" id="edit-ass-sat1_paper2">
+                    <input type="hidden" name="sat1_paper1" id="edit-ass-sat11_paper1">
+                    <input type="hidden" name="sat1_paper2" id="edit-ass-sat11_paper2">
+
+                    <input type="hidden" name="t_comment" id="edit-ass-sat2-t_comment">
                     
 
                     <div class="form-group">
@@ -44,14 +46,14 @@
 
                     <div class="form-group">
                         <label for="edit-ass-sat2">Paper 1</label>
-                        <input type="number" id="edit-ass-sat2_paper1" name="sat2_paper1"
+                        <input type="number" id="edit-ass-sat22_paper1" name="sat2_paper1"
                             class="form-control form-control-sm" required>
                     </div>
-                    
+
 
                     <div class="form-group">
                         <label for="edit-ass-sat2">Paper 2</label>
-                        <input type="number" name="sat2_paper2" id="edit-ass-sat2_paper2"
+                        <input type="number" name="sat2_paper2" id="edit-ass-sat22_paper2"
                             class="form-control form-control-sm" required>
                     </div>
 

@@ -278,6 +278,7 @@
                                         <th style="font-size: 14px; padding: 15px 10px;">Exams(70%)</th>
                                         <th style="font-size: 14px; padding: 15px 10px;">Total Grade</th>
                                         <th style="font-size: 14px; padding: 15px 10px;">Grade</th>
+                                        <th style="font-size: 14px; padding: 15px 10px;">Comment</th>
                                         <th style="font-size: 14px; padding: 15px 10px;">Action</th>
                                     </tr>
                                 </thead>
@@ -367,7 +368,7 @@
                                         SAT 2</th>
                                     <th
                                         style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
-                                        Total Class Score(30%)</th>
+                                        Total Interim(30%)</th>
                                     <th
                                         style="font-size: 13px; padding: 10px 5px; border: 1px solid #444444; color: #acacac;">
                                         Exams</th>
@@ -570,7 +571,10 @@
                     <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.total_grade}</td>
                     <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.grade}</td>
                     <td style="font-size: 12px; padding: 10px 5px; border: 1px solid #444444;">${assess.t_remarks}</td>
-                </tr>`;
+                </tr>
+                <tr> 
+                <td colspan="10" style="padding: 10px; border: 1px solid #ddd; color: #6c757d; text-align: left;">Comment: ${assess.t_comment}</td></tr>
+                `;
                             });
                         } else {
                             // Ensure student info is displayed even when no assessment data exists
@@ -893,7 +897,7 @@
                 function showNoDataMessage() {
                     studentTable.html(`
             <tr>
-                <td colspan="12" class="text-center text-muted">No data available in table</td>
+                <td colspan="13" class="text-center text-muted">No data available in table</td>
             </tr>
         `);
                 }
@@ -931,6 +935,7 @@
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.exams70}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.total_grade}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">${student.grade}</td>
+                                <td style="font-size: 14px; padding: 15px 10px;">${student.t_comment}</td>
                                 <td style="font-size: 14px; padding: 15px 10px;">
                                     <button class="btn btn-sm btn-primary edit-assessment-btn"
                                             data-id="${student.transid}"
@@ -1207,7 +1212,12 @@
                             $("#edit-ass-sat2").val(data.sat2);
                             $("#edit-ass-term").val(data.term);
                             $("#edit-ass-class_score").val(data.class_score);
-                            $("#edit-ass-exam").val(data.exams)
+                            $("#edit-ass-exam").val(data.exams);
+                            $("#edit-ass-t_comment").val(data.t_comment);
+                            $("#edit-ass-sat12_paper1").val(data.sat1_paper1);
+                            $("#edit-ass-sat12_paper2").val(data.sat1_paper2);
+                            $("#edit-ass-sat21_paper1").val(data.sat2_paper1);
+                            $("#edit-ass-sat21_paper2").val(data.sat2_paper2);
 
                             $("#edit-assess-modal").modal("show");
                         },
@@ -1265,6 +1275,7 @@
                             $("#edit-ass-sat1-exam").val(data.exams);
                             $("#edit-ass-sat1-sat1").val(data.sat1);
                             $("#edit-ass-sat1-sat2").val(data.sat2);
+                            $("#edit-ass-sat1-t_comment").val(data.t_comment);
 
                             $("#edit-assess-sat1-modal").modal("show");
                         },
@@ -1312,15 +1323,16 @@
                             $("#edit-ass-sat2-student-display").val(data.student_name);
                             $("#edit-ass-sat2-class-id").val(data.class_code);
                             $("#edit-ass-sat2-course").val(data.subcode);
-                            $("#edit-ass-sat2_paper1").val(data.sat2_paper1);
-                            $("#edit-ass-sat2_paper2").val(data.sat2_paper2);
-                            $("#edit-ass-sat1_paper1").val(data.sat1_paper1);
-                            $("#edit-ass-sat1_paper2").val(data.sat1_paper2);
+                            $("#edit-ass-sat11_paper1").val(data.sat1_paper1);
+                            $("#edit-ass-sat11_paper2").val(data.sat1_paper2);
+                            $("#edit-ass-sat22_paper1").val(data.sat2_paper1);
+                            $("#edit-ass-sat22_paper2").val(data.sat2_paper2);
                             $("#edit-ass-sat2-term").val(data.term);
                             $("#edit-ass-sat2-class_score").val(data.class_score);
                             $("#edit-ass-sat2-exam").val(data.exams);
                             $("#edit-ass-sat2-sat1").val(data.sat1);
                             $("#edit-ass-sat2-sat2").val(data.sat2);
+                            $("#edit-ass-sat2-t_comment").val(data.t_comment);
 
                             $("#edit-assess-sat2-modal").modal("show");
                         },

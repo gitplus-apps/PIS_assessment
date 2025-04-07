@@ -16,6 +16,11 @@
                     <input type="hidden" name="student_no" id="edit-ass-student-id">
                     <input type="hidden" name="class_code" id="edit-ass-class-id">
                     
+                    <input type="hidden" name="sat1_paper1" id="edit-ass-sat12_paper1">
+                    <input type="hidden" name="sat1_paper2" id="edit-ass-sat12_paper2">
+                    <input type="hidden" name="sat2_paper1" id="edit-ass-sat21_paper1">
+                    <input type="hidden" name="sat2_paper2" id="edit-ass-sat21_paper2">
+
 
                     <div class="form-group">
                         <label>Student</label>
@@ -53,6 +58,12 @@
                     <div class="form-group">
                         <label for="edit-ass-exam">Exams</label>
                         <input type="number" name="exam" id="edit-ass-exam"
+                            class="form-control form-control-sm" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-ass-comment">Comment</label>
+                        <input type="text" name="t_comment" id="edit-ass-t_comment"
                             class="form-control form-control-sm" required>
                     </div>
 

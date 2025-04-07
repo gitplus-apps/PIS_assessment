@@ -266,11 +266,20 @@ public function fetchComment(Request $request)
             'tblclass.class_desc as class_name',
             'tblstudent.student_no',
             DB::raw("TRIM(CONCAT(COALESCE(tblstudent.fname, ''), ' ', COALESCE(tblstudent.mname, ''), ' ', COALESCE(tblstudent.lname, ''))) AS student_name"),
-            DB::raw('COALESCE(tblassmain_ai.paper1, 0) as paper1'),
-            DB::raw('COALESCE(tblassmain_ai.paper2, 0) as paper2'),
-            DB::raw('COALESCE(tblassmain_ai.total_score, 0) as total_score'),
-            DB::raw('COALESCE(tblassmain_ai.grade, "N/A") as grade'),
-            DB::raw('COALESCE(tblassmain_ai.t_remarks, "No Remarks") as t_remarks')
+            DB::raw('COALESCE(tblassmain_ai.class_score, 0) as class_score'),
+                DB::raw('COALESCE(tblassmain_ai.sat1, 0) as sat1'),
+                DB::raw('COALESCE(tblassmain_ai.sat2, 0) as sat2'),
+                DB::raw('COALESCE(tblassmain_ai.sat1_paper1, 0) as sat1_paper1'),
+                DB::raw('COALESCE(tblassmain_ai.sat1_paper2, 0) as sat1_paper2'),
+                DB::raw('COALESCE(tblassmain_ai.sat2_paper1, 0) as sat2_paper1'),
+                DB::raw('COALESCE(tblassmain_ai.sat2_paper2, 0) as sat2_paper2'),
+                DB::raw('COALESCE(tblassmain_ai.total_class_score, 0) as total_score'),
+                DB::raw('COALESCE(tblassmain_ai.exam, 0) as exams'),
+                DB::raw('COALESCE(tblassmain_ai.exam70, 0) as exams70'),
+                DB::raw('COALESCE(tblassmain_ai.total_grade, 0) as total_grade'),
+                DB::raw('COALESCE(tblassmain_ai.grade, "N/A") as grade'),
+                DB::raw('COALESCE(tblassmain_ai.t_remarks, "No Remarks") as t_remarks'),
+                DB::raw('COALESCE(tblcomment_ia.ct_remarks, "No Comment") as ct_remarks')
         )
         ->distinct()
         ->get();

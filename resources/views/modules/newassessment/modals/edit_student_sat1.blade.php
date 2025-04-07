@@ -25,6 +25,8 @@
                     <input type="hidden" name="sat2_paper1" id="edit-ass-sat2_paper1">
                     <input type="hidden" name="sat2_paper2" id="edit-ass-sat2_paper2">
 
+                    <input type="hidden" name="t_comment" id="edit-ass-sat1-t_comment">
+
                     <div class="form-group">
                         <label>Student</label>
                         <input type="text" id="edit-ass-sat1-student-display" class="form-control" readonly>

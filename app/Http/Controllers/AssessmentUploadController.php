@@ -70,6 +70,7 @@ class AssessmentUploadController extends Controller
                 'sat_1' => ['sat 1', 'SAT 1 (80)'],
                 'sat_2' => ['sat 2', 'SAT 2 (100)'],
                 'exams' => ['exams', 'exams score', 'exam', 'exam score', ''],
+                //'t_comment' => ['t_comment', 'comments', 'comment'. '']
             ];
 
             // Map column indexes
@@ -142,23 +143,51 @@ class AssessmentUploadController extends Controller
                     continue;
                 }
 
-                $classScore = isset($row[$columnIndexes['class_score']]) && $row[$columnIndexes['class_score']] !== '' ? (float) $row[$columnIndexes['class_score']] : 0;
-                $sat1 = isset($row[$columnIndexes['sat_1']]) && $row[$columnIndexes['sat_1']] !== '' ? (float) $row[$columnIndexes['sat_1']] : 0;
-                $sat2 = isset($row[$columnIndexes['sat_2']]) && $row[$columnIndexes['sat_2']] !== '' ? (float) $row[$columnIndexes['sat_2']] : 0;
-                $exams = isset($row[$columnIndexes['exams']]) && $row[$columnIndexes['exams']] !== '' ? (float) $row[$columnIndexes['exams']] : 0;
 
-                // Calculate total score
-                $subCodePrefix = substr($request->subcode, 0, 5);
-                $specialSubjects = ['HISTY', 'GEOGY', 'SPANY', 'MUSIY', 'FRENY', 'ARTCY'];
-                $totalClassScore = $subCodePrefix == 'MATHY'
-                    ? round(((round($sat1) + round($sat2) + round($subjectCode)) / 220) * 30)
-                    : (in_array($subCodePrefix, $specialSubjects)
-                        ? round(((round($sat2) + round($subjectCode)) / 200) * 30)
-                        : round(((round($sat1) + round($sat2) + round($subjectCode)) / 300) * 30));
-                $exam70 = $exams * 0.7;
-                $totalClassScore = round((($sat1 + $sat2 + $classScore) / 300) * 30);
-                $exam70 = round($exams * 0.7);
-                $totalGrade = $totalClassScore + $exam70;
+                // $classScore = isset($row[$columnIndexes['class_score']]) && $row[$columnIndexes['class_score']] !== '' ? (float) $row[$columnIndexes['class_score']] : 0;
+                // $sat1 = isset($row[$columnIndexes['sat_1']]) && $row[$columnIndexes['sat_1']] !== '' ? (float) $row[$columnIndexes['sat_1']] : 0;
+                // $sat2 = isset($row[$columnIndexes['sat_2']]) && $row[$columnIndexes['sat_2']] !== '' ? (float) $row[$columnIndexes['sat_2']] : 0;
+                // $exams = isset($row[$columnIndexes['exams']]) && $row[$columnIndexes['exams']] !== '' ? (float) $row[$columnIndexes['exams']] : 0;
+                // $t_comment = isset($row[$columnIndexes['t_comment']]) && $row[$columnIndexes['t_comment']] !== '' ? $row[$columnIndexes['t_comment']] : 'No comment';
+
+                // // Calculate total score
+                // $subCodePrefix = substr($request->subcode, 0, 5);
+                // $specialSubjects = ['HISTY', 'GEOGY', 'SPANY', 'MUSIY', 'FRENY', 'ARTCY'];
+                // $totalClassScore = $subCodePrefix == 'MATHY'
+                //     ? round(((round($sat1) + round($sat2) + round($subjectCode)) / 220) * 30)
+                //     : (in_array($subCodePrefix, $specialSubjects)
+                //         ? round(((round($sat2) + round($subjectCode)) / 200) * 30)
+                //         : round(((round($sat1) + round($sat2) + round($subjectCode)) / 300) * 30));
+                // $exam70 = $exams * 0.7;
+                // $totalClassScore = round((($sat1 + $sat2 + $classScore) / 300) * 30);
+                // $exam70 = round($exams * 0.7);
+                // $totalGrade = $totalClassScore + $exam70;
+
+
+                $classScore = isset($row[$columnIndexes['class_score']]) && $row[$columnIndexes['class_score']] !== '' ? (float) $row[$columnIndexes['class_score']] : 0;
+$sat1 = isset($row[$columnIndexes['sat_1']]) && $row[$columnIndexes['sat_1']] !== '' ? (float) $row[$columnIndexes['sat_1']] : 0;
+$sat2 = isset($row[$columnIndexes['sat_2']]) && $row[$columnIndexes['sat_2']] !== '' ? (float) $row[$columnIndexes['sat_2']] : 0;
+$exams = isset($row[$columnIndexes['exams']]) && $row[$columnIndexes['exams']] !== '' ? (float) $row[$columnIndexes['exams']] : 0;
+//$t_comment = isset($row[$columnIndexes['t_comment']]) && $row[$columnIndexes['t_comment']] !== '' ? $row[$columnIndexes['t_comment']] : 'No comment';
+// $t_comment = isset($columnIndexes['t_comment']) && isset($row[$columnIndexes['t_comment']]) && $row[$columnIndexes['t_comment']] !== ''
+//     ? $row[$columnIndexes['t_comment']]
+//     : 'No comment';
+
+// Calculate total score
+$subCodePrefix = substr($request->subcode, 0, 5);
+$specialSubjects = ['HISTY', 'GEOGY', 'SPANY', 'MUSIY', 'FRENY', 'ARTCY'];
+
+if ($subCodePrefix == 'MATHY') {
+    $totalClassScore = round((($sat1 + $sat2 + $classScore) / 220) * 30);
+} elseif (in_array($subCodePrefix, $specialSubjects)) {
+    $totalClassScore = round((($sat2 + $classScore) / 200) * 30);
+} else {
+    $totalClassScore = round((($sat1 + $sat2 + $classScore) / 300) * 30);
+}
+
+$exam70 = round($exams * 0.7);
+$totalGrade = $totalClassScore + $exam70;
+
 
                 // Determine grade
                 // $grade = $this->calculateGrade($totalGrade);
@@ -199,6 +228,7 @@ class AssessmentUploadController extends Controller
                     'total_grade' => $totalGrade,
                     'grade' => $grade,
                     't_remarks' => $remarks,
+                    //'t_comment' => $t_comment,
                     'deleted' => '0',
                     'term' => $term,
                     'createuser' => auth()->user()->userid,
