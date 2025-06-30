@@ -16,7 +16,9 @@ use App\Gitplus\Arkesel as Sms;
 use App\Http\Resources\StaffAccountResource;
 use App\Http\Resources\StaffContactsResource;
 use App\Http\Resources\StaffEmploymentResource;
+use App\Http\Resources\Staff\StaffPayrollResource;
 use App\Http\Resources\StaffQualResource;
+use App\Models\Payroll;
 use Illuminate\Support\Facades\Auth;
 
 class staffcontroller extends Controller
@@ -102,6 +104,19 @@ class staffcontroller extends Controller
         ]);
     }
 
+    public function staffPayroll($schoolCode)
+    {
+        $payroll = Payroll::with('earning', 'deduction', 'staff')
+            ->where('school_code', $schoolCode)
+            ->where('staffno', Auth::user()->userid)
+            ->where('deleted', 0)
+            ->get();
+
+        return response()->json([
+            'data' => StaffPayrollResource::collection($payroll),
+        ]);
+    }
+
     public function fetchStaffAccountDetails($school_code)
     {
         $data = DB::table("tblstaff_bank")->select(
@@ -171,7 +186,7 @@ class staffcontroller extends Controller
 
 
 
-    
+
     public function store(Request $request)
     {
         $validator = validator::make(
@@ -254,7 +269,7 @@ class staffcontroller extends Controller
                         ->where("school_code", $request->school_code)
                         ->where("mod_id", $mod->mod_id)
                         ->exists();
-                        
+
                     if (!$exists) {
                         DB::table("tbluser_module_privileges")->insert([
                             "userid" => $request->email,
@@ -303,7 +318,7 @@ class staffcontroller extends Controller
             //     Hello {$firstName}, your {$school->school_name} account has been created.
             //     URL: {$url}
             //     Username:{$staffno}
-            //     Password:{$staffno} 
+            //     Password:{$staffno}
             //     Do not share your credentials.
             //     MSG;
             //     $sms = new Sms($school->school_prefix, env("ARKESEL_SMS_API_KEY"));
@@ -347,7 +362,7 @@ class staffcontroller extends Controller
             'id' => 'required|exists:tblstaff,transid',
             // Add other validation rules for required fields
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 "ok" => false,
@@ -358,10 +373,10 @@ class staffcontroller extends Controller
                 ]
             ]);
         }
-    
+
         try {
             $staff = DB::table("tblstaff")->where('transid', $request->id)->first();
-    
+
             if (!$staff) {
                 return response()->json([
                     "ok" => false,
@@ -372,7 +387,7 @@ class staffcontroller extends Controller
                     ]
                 ]);
             }
-    
+
             // Proceed with updating the record
             DB::table("tblstaff")->where('transid', $request->id)->update([
                 // Update fields as needed
@@ -395,7 +410,7 @@ class staffcontroller extends Controller
                 'modifydate' => date('Y-m-d'),
                 'modifyuser' => $request->createuser,
             ]);
-    
+
             // Optionally, handle image upload if needed
             if ($request->hasFile('profile_pic')) {
                 $filePath = $request->file('profile_pic')->store('public/staff');
@@ -403,12 +418,12 @@ class staffcontroller extends Controller
                     'picture' => env("APP_URL") . "/" . str_replace("public", "storage", $filePath),
                 ]);
             }
-    
+
             return response()->json([
                 "ok" => true,
                 "msg" => "Update successful",
             ]);
-    
+
         } catch (\Exception $e) {
             return response()->json([
                 "ok" => false,
@@ -420,7 +435,7 @@ class staffcontroller extends Controller
             ]);
         }
     }
-    
+
 
 
 

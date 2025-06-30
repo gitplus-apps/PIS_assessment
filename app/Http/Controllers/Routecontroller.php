@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\ClassRoom as AppClassRoom;
+use App\Models\ClassRoom;
+use App\Models\Staff;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +18,36 @@ class Routecontroller extends Controller
 
     {
         $this->middleware(['auth']);
+    }
+
+    private function checkPrivileges($modURL)
+    {
+        // dd(Auth::user()->email);
+        $permissions = DB::table('tbluser_module_privileges')
+            ->join('tblmodule', 'tbluser_module_privileges.mod_id', 'tblmodule.mod_id')
+            ->where('tbluser_module_privileges.mod_read', 1)
+            ->where('tbluser_module_privileges.userid', Auth::user()->email)
+            ->where('tblmodule.mod_url', $modURL)
+            ->exists();
+
+        return $permissions;
+    }
+
+    private function checkModuleLock($modURL)
+    {
+        $currentTime = Carbon::now();
+        $startTime = DB::table('tblmodule')->where('mod_status', 1)->where('mod_url', $modURL)->pluck('start_time')->first();
+        $endTime = DB::table('tblmodule')->where('mod_status', 1)->where('mod_url', $modURL)->pluck('end_time')->first();
+
+        if (is_null($startTime) || is_null($endTime)) {
+            return true;
+        }
+
+        if ($currentTime->format('H:i:s') >= $startTime && $currentTime->format('H:i:s') <= $endTime) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function dashboard(Request $request)
@@ -243,6 +277,52 @@ $averageScores = $performance->pluck('avg_score')->toArray();
             ]);
         }
 
+    }
+
+    public function payroll()
+    {
+        if ($this->checkPrivileges('payroll') && $this->checkModuleLock('payroll')) {
+            $departments = DB::table('tbldepart')
+                ->where('school_code', '=', Auth::user()->school_code)
+                ->get();
+            $staffCount = Staff::where('school_code', '=', Auth::user()->school_code)->where('deleted', '0')->count();
+            $staff = Staff::where('school_code', '=', Auth::user()->school_code)->where('deleted', '0')->get();
+            $non_staff = Staff::where('school_code', '=', Auth::user()->school_code)
+                ->where('staff_type', 'NAC')
+                ->where('deleted', '0')
+                ->count();
+            $teaching_staff = Staff::where('school_code', '=', Auth::user()->school_code)
+                ->where('staff_type', 'AC')
+                ->where('deleted', '0')->count();
+            $acyear = DB::table('tblacyear')
+                ->where('current_term', '1')
+                ->where('school_code', Auth::user()->school_code)
+                ->where('deleted', '0')->get();
+            $class = ClassRoom::where('school_code', Auth::user()->school_code)->where('deleted', '0')->get();
+            $item = DB::table('tblpayroll_items')->where('school_code', Auth::user()->school_code)->where('deleted', 0)->get();
+
+            $base_salary = DB::table('tblpayroll_setup')->where('school_code', Auth::user()->school_code)
+                ->where('deleted', 0)
+                ->where('current', 1)
+                ->select('amount')
+                ->where('amount', '>', 0)
+                ->first();
+
+            return view('modules.payroll.index')->with([
+                'departments' => $departments,
+                'staffCount' => $staffCount,
+                'staff' => $staff,
+                'teachingStaff' => $teaching_staff,
+                'nonStaff' => $non_staff,
+                'acyear' => $acyear,
+                'class' => $class,
+                'items' => $item,
+                'school_code' => Auth::user()->school_code,
+                // 'base_salary' => $base_salary ? $base_salary->amount : 0,
+            ]);
+        } else {
+            return view('error_pages.403');
+        }
     }
 
     private function calculateGrade($num)
