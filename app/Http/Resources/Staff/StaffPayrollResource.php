@@ -4,6 +4,7 @@ namespace App\Http\Resources\Staff;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class StaffPayrollResource extends JsonResource
@@ -19,13 +20,17 @@ class StaffPayrollResource extends JsonResource
 
         $url = url("payslip/{$this->transid}");
 
-        Log::info('Staff Name', [$this->staffID()]);
+        // Log::info('Staff Name', [$this->staffID()]);
+
+        $actualStaff = DB::table('tblstaff')
+            ->where('staffno', Auth::user()->userid)
+            ->first();
 
         return [
             'id' => $this->transid,
-            'school_code' => $this->schoolCode(),
-            'staff_name' => $this->staffName(),
-            'staffno' => $this->staffID(),
+            'school_code' => Auth::user()->school_code,
+            'staff_name' => "{$actualStaff->fname} {$actualStaff->mname} {$actualStaff->lname}",
+            'staffno' => Auth::user()->userid,
             'date' => date('Y-m-d', strtotime($this->createdate)),
             'month' => $this->pay_month,
             'year' => $this->pay_year,

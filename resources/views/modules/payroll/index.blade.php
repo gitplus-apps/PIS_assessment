@@ -79,8 +79,6 @@
 
     </div>
 
-
-
     @include('modules.payroll.modals.view_payroll')
     @include('modules.payroll.modals.view_staff_payroll')
     <script>

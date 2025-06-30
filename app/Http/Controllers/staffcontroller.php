@@ -112,6 +112,20 @@ class staffcontroller extends Controller
             ->where('deleted', 0)
             ->get();
 
+        Log::info('User ID', [Auth::user()->userid]);
+
+        // $payroll = DB::table('tblpayroll')
+        //     ->where('staffno',Auth::user()->userid)
+        //     ->where('school_code',$schoolCode)
+        //     ->where('deleted',0)
+        //     ->get();
+
+        Log::info('Raw Payroll', $payroll->toArray());
+
+        Log::info('Request Data',[
+            'school code' => $schoolCode,
+            'user id' => Auth::user()->userid,
+        ]);
         return response()->json([
             'data' => StaffPayrollResource::collection($payroll),
         ]);

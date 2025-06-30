@@ -130,7 +130,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/notices/{id}', [NoticeController::class, 'update'])->name('notice.update');
     Route::delete('/notices/{id}', [NoticeController::class, 'delete'])->name('notice.delete');
 
-    Route::get('/payroll',[RouteController::class, 'payroll']);
+    Route::get('/payroll',[Routecontroller::class, 'payroll']);
     Route::get('/staff/payroll/{schoolCode}',[StaffController::class, 'staffPayroll']);
 
 });
