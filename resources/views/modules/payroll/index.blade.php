@@ -192,29 +192,29 @@
             ],
         })
 
-        //View staff payroll items
+        //View staff payroll
         $(document).on("click", ".view-btn", function() {
             const data = payrollTable.row($(this).parents("tr")).data();
 
             $("#view-staff-payroll-modal").modal("show");
 
-fetch(`${appUrl}/get-selected-staff/${data.school_code}/${data.staffno}`,{
-        method: 'GET',
-        headers: {
-            'X-XSRF-TOKEN': $('meta[name="xsrf-token"]').attr('content'),
-            'laravel_session': $('meta[name="laravel_session"]').attr('content'),
-            'Accept': 'application/json'
-        }
-    }).then(res=>{
-            if(!res.ok) throw new Error("Failed to fetch active staff");
-            return res.json();
-        }).then(dataResponse=>{
-            const {data}=dataResponse;
-            $('#view-modal-staff-national_id_no').val(data.national_id_no);
-            $('#view-modal-staff-national_id').val(data.national_id);
-            $('#view-modal-staff-school_name').val(data.school_name);
-            $('#view-modal-staff-position').val(data.job_position);
-        });
+            fetch(`${appUrl}/get-selected-staff/${data.school_code}/${data.staffno}`,{
+                method: 'GET',
+                headers: {
+                    'X-XSRF-TOKEN': $('meta[name="xsrf-token"]').attr('content'),
+                    'laravel_session': $('meta[name="laravel_session"]').attr('content'),
+                    'Accept': 'application/json'
+                }
+            }).then(res=>{
+                    if(!res.ok) throw new Error("Failed to fetch active staff");
+                    return res.json();
+                }).then(dataResponse=>{
+                    const {data}=dataResponse;
+                    $('#view-modal-staff-national_id_no').val(data.national_id_no);
+                    $('#view-modal-staff-national_id').val(data.national_id);
+                    $('#view-modal-staff-school_name').val(data.school_name);
+                    $('#view-modal-staff-position').val(data.job_position_desc);
+                });
 
 
             // Use the new IDs that match the modal

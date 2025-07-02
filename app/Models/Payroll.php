@@ -37,7 +37,7 @@ class Payroll extends Model
 
     public function staff(): BelongsTo
     {
-        return $this->belongsTo(Staff::class, 'staffno');
+        return $this->belongsTo(Staff::class, 'staffno', 'staffno');
     }
 
     public function totalEarnings()

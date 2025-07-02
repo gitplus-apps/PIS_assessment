@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AssessmentController;
+use App\Http\Controllers\PayslipController;
 use App\Http\Controllers\Routecontroller;
 
 use App\Http\Controllers\Staff\StaffRouteController;
@@ -131,9 +132,14 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/notices/{id}', [NoticeController::class, 'delete'])->name('notice.delete');
 
     Route::get('/payroll',[Routecontroller::class, 'payroll']);
+    Route::get('get-selected-staff/{school_code}/{staffno}', [StaffController::class,'getSelectedStaff']);
+
     Route::get('/staff/payroll/{schoolCode}',[StaffController::class, 'staffPayroll']);
 
 });
+
+Route::get('payslip/{tranid}', [PayslipController::class, 'show'])->name('admin.paylsip')->middleware('staffOnly');
+
 
 Route::get("/assessment/staff/{schoolCode}", [AssessmentController::class, 'staff'])->middleware('auth');
 Route::get('/assessments/data', [AssessmentController::class, 'getAssessmentsData'])->name('assessments.data');

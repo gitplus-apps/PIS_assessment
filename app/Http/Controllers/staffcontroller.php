@@ -20,6 +20,7 @@ use App\Http\Resources\Staff\StaffPayrollResource;
 use App\Http\Resources\StaffQualResource;
 use App\Models\Payroll;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class staffcontroller extends Controller
 {
@@ -112,23 +113,56 @@ class staffcontroller extends Controller
             ->where('deleted', 0)
             ->get();
 
-        Log::info('User ID', [Auth::user()->userid]);
-
         // $payroll = DB::table('tblpayroll')
         //     ->where('staffno',Auth::user()->userid)
         //     ->where('school_code',$schoolCode)
         //     ->where('deleted',0)
         //     ->get();
 
-        Log::info('Raw Payroll', $payroll->toArray());
-
-        Log::info('Request Data',[
-            'school code' => $schoolCode,
-            'user id' => Auth::user()->userid,
-        ]);
         return response()->json([
             'data' => StaffPayrollResource::collection($payroll),
         ]);
+    }
+
+    public function getSelectedStaff (Request $request, $school_code, $staffno){
+
+        try{
+            //Get active staff from the frontend
+            $activeStaff = DB::table('tblstaff as staff')
+                ->select(
+                    'staff.*','tblschool.school_code','tblschool.school_prefix','tblschool.school_name'
+                )
+                ->leftJoin('tblschool', 'staff.school_code', '=', 'tblschool.school_code')
+                ->where('staff.school_code', $school_code)
+                ->where('tblschool.school_code', $school_code)
+                ->where('staff.staffno',$staffno)
+                ->first();
+
+            if ($activeStaff) {
+                $position = DB::table('tblposition')
+                    ->where('pos_code', $activeStaff->job_position)
+                    ->value('pos_desc');
+
+                // Step 3: Add the pos_desc to the object
+                $activeStaff->job_position_desc = $position ?? 'N/A';
+            }
+
+            return response()->json([
+                'status'=>'success',
+                'msg'=>'Fetched selected staff',
+                'data'=>$activeStaff
+            ],200);
+
+        }catch(ValidationException $e){
+            return response()->json([
+                'status'=>"error",
+                "mag"=>"Selection failed",
+                'errors'=>$e->errors(),
+                'message'=>$e->getMessage()
+            ], 500);
+
+        }
+
     }
 
     public function fetchStaffAccountDetails($school_code)
