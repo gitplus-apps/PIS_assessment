@@ -40,7 +40,7 @@
                             <option value="">--Select Subject--</option>
                         </select>
                     </div>
-                    
+
                 </div>
 
                 <div class="mb-3">
@@ -62,12 +62,12 @@
             <div id="resultArea" class="mt-4" style="display: none;">
                 <h5 class="text-primary">Upload Results:</h5>
                 <div class="alert alert-success" id="successMsg"></div>
-                
+
                 <div id="errorList" style="display: none;">
                     <h6 class="text-danger">Errors:</h6>
                     <ul class="list-group" id="errorItems"></ul>
                 </div>
-                
+
                 <h6 class="mt-3">Processed Records:</h6>
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered" id="processedTable">
@@ -121,9 +121,9 @@
         // Handle form submission
         $('#uploadForm').submit(function(e) {
             e.preventDefault();
-            
+
             let formData = new FormData(this);
-            
+
             // Show loading
             Swal.fire({
                 title: 'Processing...',
@@ -133,7 +133,7 @@
                     Swal.showLoading();
                 }
             });
-            
+
             $.ajax({
                 url: "{{ route('newassessment.upload.process') }}",
                 type: "POST",
@@ -142,40 +142,23 @@
                 processData: false,
                 success: function(response) {
                     Swal.close();
-                    
+
                     if (response.ok) {
                         $('#successMsg').text(response.msg);
                         $('#resultArea').show();
-                        
+
                         // Display errors if any
                         if (response.errors && response.errors.length > 0) {
                             $('#errorList').show();
                             $('#errorItems').empty();
-                            
+
                             response.errors.forEach(error => {
                                 $('#errorItems').append(`<li class="list-group-item list-group-item-warning">${error}</li>`);
                             });
                         } else {
                             $('#errorList').hide();
                         }
-                        
-                        // Display processed records
-                        $('#processedBody').empty();
-                        if (response.processed && response.processed.length > 0) {
-                            response.processed.forEach(record => {
-                                $('#processedBody').append(`
-                                    <tr>
-                                        <td>${record.student_name}</td>
-                                        <td>${record.student_no}</td>
-                                        <td>${record.paper1}</td>
-                                        <td>${record.paper2}</td>
-                                        <td>${record.total_score}</td>
-                                        <td>${record.grade}</td>
-                                        <td>${record.action === 'insert' ? 'New' : 'Updated'}</td>
-                                    </tr>
-                                `);
-                            });
-                        }
+
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -186,13 +169,13 @@
                 },
                 error: function(xhr) {
                     Swal.close();
-                    
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
                         text: 'An error occurred while processing the file'
                     });
-                    
+
                     console.error(xhr.responseText);
                 }
             });

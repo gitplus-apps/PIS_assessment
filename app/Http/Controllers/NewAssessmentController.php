@@ -101,6 +101,7 @@ class NewAssessmentController extends Controller
                     ->where('tblassmain_ai.term', $term)
                     ->where('tblassmain_ai.deleted', '0');
             })
+            ->join('tblclass', 'tblclass.class_code', '=','tblstudent.current_class')
             ->where('tblstudent.current_class', $classCode)
             ->where('tblstudent.deleted', '0') // Exclude deleted students
             ->select(
@@ -108,7 +109,8 @@ class NewAssessmentController extends Controller
                 'tblstudent.fname',
                 'tblstudent.mname',
                 'tblstudent.lname',
-                'tblstudent.current_class',
+                // 'tblstudent.current_class',
+                'tblclass.class_desc as current_class',
                 DB::raw('COALESCE(tblassmain_ai.transid, tblstudent.transid) as transid'),
                 DB::raw('IFNULL(tblassmain_ai.class_code, "'.$classCode.'") as class_code'),
                 DB::raw('IFNULL(tblassmain_ai.subcode, "'.$subcode.'") as subcode'),
@@ -301,8 +303,7 @@ class NewAssessmentController extends Controller
                             ->orWhereNull('tblassmain_ai.subcode');
                     });
             })
-            ->leftJoin('tblclass', 'tblstudent.current_class', '=', 'tblclass.class_code')
-            ->select(
+            ->leftJoin('tblclass', 'tblstudent.current_class', '=', 'tblclass.class_code')            ->select(
                 'tblstudent.student_no',
                 'tblstudent.transid',
                 'tblstudent.school_code',
